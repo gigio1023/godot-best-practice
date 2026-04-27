@@ -118,4 +118,4 @@ godot-best-practice/
 
 ## License
 
-Personal use.
+MIT.
