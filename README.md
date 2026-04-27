@@ -27,15 +27,6 @@ Generates 3D worlds as coordinate dumps | Raw transform lists are hard to review
 npx skills add gigio1023/godot-best-practice
 ```
 
-The `skills` CLI also supports targeted installs with `--agent`. Based on the package usage, these agent names are valid:
-
-```bash
-npx skills add gigio1023/godot-best-practice --agent codex
-npx skills add gigio1023/godot-best-practice --agent claude-code
-npx skills add gigio1023/godot-best-practice --agent cursor
-npx skills add gigio1023/godot-best-practice --agent gemini-cli
-```
-
 ### Without Skills CLI
 
 Ask your coding agent to fetch and follow the install instructions for its environment:
