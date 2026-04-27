@@ -181,7 +181,7 @@ When an AI agent will continue editing the project:
 When upgrading a Godot project or porting ideas from another engine:
 
 1. Identify the source and target Godot versions before editing.
-2. Read the official migration or upgrade notes for changed APIs and defaults.
+2. Read the official upgrade notes for changed APIs and defaults.
 3. Preserve gameplay behavior and data first.
 4. Rebuild scenes and scripts around Godot concepts rather than copying another engine's architecture mechanically.
 5. Verify with import, smoke, visual, and export checks appropriate to the changed surface.
