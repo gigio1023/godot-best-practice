@@ -1,0 +1,16 @@
+# NOTICE
+
+This repository was created from original local guidance and public research.
+
+No upstream skill files are vendored in this repo.
+
+Research sources:
+
+- `mcp.directory` Godot skill page: https://mcp.directory/skills/godot
+- `bfollington/terma` Godot skill source listing: https://github.com/bfollington/terma
+- `fernforestgames/agent-skill-godot`: https://github.com/fernforestgames/agent-skill-godot
+- Official Godot documentation: https://docs.godotengine.org/
+
+`scripts/check_gd_syntax.sh` is inspired by the MIT-licensed syntax-checking workflow in `fernforestgames/agent-skill-godot`, but was rewritten for this repo's structure and validation style.
+
+The `bfollington/terma` Godot skill is not copied or vendored here. Its public MCP.Directory page informed the skill architecture research only.

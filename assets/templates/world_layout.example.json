@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "units": "meters",
+  "landmarks": [
+    {
+      "id": "market",
+      "label": "Market",
+      "position": [0, 0, 0],
+      "size": [10, 4, 8],
+      "anchors": {
+        "front_door": [0, 0, -5],
+        "entry_queue": [-2, 0, -2],
+        "counter": [2, 0, 1]
+      }
+    },
+    {
+      "id": "hub",
+      "label": "Hub",
+      "position": [24, 0, 0],
+      "size": [10, 4, 8],
+      "anchors": {
+        "front_door": [24, 0, -5],
+        "service_counter": [24, 0, -1],
+        "waiting_area": [29, 0, 2]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "hub_loop",
+      "points": ["hub.front_door", "hub.service_counter", "hub.waiting_area"]
+    }
+  ],
+  "interaction_zones": [
+    {
+      "id": "hub_service_zone",
+      "kind": "interaction",
+      "anchor": "hub.service_counter",
+      "radius": 2.5
+    }
+  ]
+}
