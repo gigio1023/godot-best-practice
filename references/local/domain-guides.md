@@ -23,7 +23,7 @@ Defaults:
 - Use `TileMapLayer`/tile workflows according to the project's Godot version and existing setup.
 - Keep coordinate, collision, and visual scale consistent.
 
-Validate:
+Check:
 
 - collision shapes match sprites
 - movement uses `_physics_process`
@@ -47,7 +47,7 @@ Defaults:
 - Use glTF for imported models.
 - Prefer semantic anchors and generator scripts for large generated layouts.
 
-Validate:
+Check:
 
 - spawn points do not intersect collision
 - main landmarks are visible and reachable
@@ -71,7 +71,7 @@ Defaults:
 - Keep UI state separate from gameplay simulation where practical.
 - Prefer theme resources for repeated styling.
 
-Validate:
+Check:
 
 - no overlap at target resolutions
 - text fits localized or long strings where relevant
@@ -95,7 +95,7 @@ Defaults:
 - Use simple shapes unless complex collision is required.
 - Keep physics movement in `_physics_process`.
 
-Validate:
+Check:
 
 - layers/masks allow intended interactions
 - shape scale is not accidentally distorted by parent transforms
@@ -119,7 +119,7 @@ Defaults:
 - Keep debug visualization available for pathing work.
 - Treat dynamic obstacles and layer access as explicit design choices.
 
-Validate:
+Check:
 
 - agents can reach representative targets
 - paths do not clip through walls or blocked areas
@@ -141,7 +141,7 @@ Defaults:
 - Use viewports intentionally; they can be powerful but add complexity.
 - Prefer standard materials until custom shader behavior is needed.
 
-Validate:
+Check:
 
 - renderer-specific features are supported on target
 - shader syntax compiles
@@ -165,7 +165,7 @@ Defaults:
 - Keep source assets outside `.godot/imported/`.
 - Do not hand-edit generated import artifacts.
 
-Validate:
+Check:
 
 - import completed headlessly
 - resource paths resolve
@@ -188,7 +188,7 @@ Defaults:
 - Verify templates are installed before blaming project code.
 - Treat web export, mobile permissions, signing, and C# support as version-sensitive.
 
-Validate:
+Check:
 
 - selected preset exists
 - export templates are installed

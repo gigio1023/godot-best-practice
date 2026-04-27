@@ -6,8 +6,6 @@
 npx skills add gigio1023/godot-best-practice --agent cursor
 ```
 
-For private repos, make sure the environment has GitHub credentials that can read `gigio1023/godot-best-practice`.
-
 ## Manual install
 
 Install into Cursor skills:

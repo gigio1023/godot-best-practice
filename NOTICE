@@ -11,6 +11,6 @@ Research sources:
 - `fernforestgames/agent-skill-godot`: https://github.com/fernforestgames/agent-skill-godot
 - Official Godot documentation: https://docs.godotengine.org/
 
-`scripts/check_gd_syntax.sh` is inspired by the MIT-licensed syntax-checking workflow in `fernforestgames/agent-skill-godot`, but was rewritten for this repo's structure and validation style.
+`scripts/check_gd_syntax.sh` is inspired by the MIT-licensed syntax-checking workflow in `fernforestgames/agent-skill-godot`, but was rewritten for this repo's structure and evidence-first style.
 
 The `bfollington/terma` Godot skill is not copied or vendored here. Its public MCP.Directory page informed the skill architecture research only.

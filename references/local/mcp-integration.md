@@ -11,7 +11,7 @@ Preferred source of truth:
 1. project files
 2. semantic layout data
 3. generator scripts
-4. Godot CLI validation
+4. Godot CLI checks
 5. screenshots/runtime evidence
 6. MCP/editor state as optional convenience
 
@@ -39,7 +39,7 @@ Before installing or trusting a Godot MCP server:
 - understand transport and exposed tools
 - avoid exposing shell/file write tools unnecessarily
 - keep editor automation scoped to the project
-- preserve file-based validation gates
+- preserve file-based completion evidence
 
 ## Known public examples
 
@@ -54,4 +54,4 @@ Do not copy their assumptions blindly. Some expect specific MCP servers or edito
 
 ## Agent Rule
 
-If MCP/editor automation changes the project, the agent still needs file diffs and validation commands. A successful editor operation is not enough evidence by itself.
+If MCP/editor automation changes the project, the agent still needs file diffs and Godot check commands. A successful editor operation is not enough evidence by itself.

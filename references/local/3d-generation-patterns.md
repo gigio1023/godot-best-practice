@@ -58,7 +58,7 @@ This improves agent inspection, screenshot debugging, and MCP/editor automation 
 
 Use `NavigationRegion3D` and `NavigationAgent3D` for actor movement. Keep generated layouts small enough that navigation can be inspected visually before scaling up.
 
-Validation cameras should include:
+Inspection cameras should include:
 
 - whole-map orthographic/debug view
 - player-height view at each landmark
@@ -94,4 +94,4 @@ For first playable slices, generate proxy geometry:
 - simple desk/counter meshes
 - route markers in debug-only groups
 
-Replace with imported glTF assets after gameplay validation.
+Replace with imported glTF assets after gameplay checks.

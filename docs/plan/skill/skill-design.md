@@ -2,7 +2,7 @@
 
 ## Goal
 
-Create a reusable `godot-best-practice` skill that makes coding agents effective across Godot 4.x work: GDScript, C#, scenes, resources, 2D, 3D, UI, physics, navigation, rendering, shaders, import/export, version upgrades, and validation.
+Create a reusable `godot-best-practice` skill that makes coding agents effective across Godot 4.x work: GDScript, C#, scenes, resources, 2D, 3D, UI, physics, navigation, rendering, shaders, import/export, version upgrades, and runtime evidence checks.
 
 The skill should carry high-signal Godot practice locally, while using official docs for exact details and version-sensitive behavior.
 
@@ -17,7 +17,7 @@ Secondary:
 - Code Scaffolding and Templates
 - Runbook
 
-The skill intentionally avoids vendoring the full official Godot docs. It focuses on agent failure modes, practical defaults, official-doc lookup paths, and repeatable validation.
+The skill intentionally avoids vendoring the full official Godot docs. It focuses on agent failure modes, practical defaults, official-doc lookup paths, and repeatable runtime checks.
 
 ## Trigger Strategy
 
@@ -43,7 +43,7 @@ The skill description must be pushy enough to trigger for:
 - `godot-architecture-patterns.md`
 - `scene-resource-workflow.md`
 - `domain-guides.md`
-- `validation-gates.md`
+- `completion-evidence.md`
 - `mcp-integration.md`
 - `3d-generation-patterns.md`
 - `source-notes.md`
@@ -69,19 +69,4 @@ This avoids bloating `SKILL.md` while keeping the agent grounded in official doc
 - Do not convert Unity projects mechanically.
 - Do not make the skill 3D-only.
 
-## Validation
-
-Run:
-
-```bash
-bash scripts/validate_skill_structure.sh .
-```
-
-Manual checks:
-
-- `SKILL.md` frontmatter is valid.
-- description is under 1024 characters.
-- `SKILL.md` is under 500 lines.
-- referenced files exist.
-- scripts are executable.
 - no secrets are committed.

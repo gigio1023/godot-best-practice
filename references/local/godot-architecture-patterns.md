@@ -80,7 +80,7 @@ Put behavior in scripts:
 - input handling
 - AI decisions
 - inventory/combat/dialogue rules
-- validation and generation tools
+- checking and generation tools
 
 Put data in resources or data files:
 
@@ -124,7 +124,7 @@ Use groups for:
 
 - broad queries such as `damageable`, `interactable`, `saveable`
 - debug overlays
-- spawn/route/validation markers
+- spawn/route/check markers
 - systems that operate on roles rather than specific node paths
 
 Do not use groups as a substitute for explicit dependencies when there is exactly one required object.

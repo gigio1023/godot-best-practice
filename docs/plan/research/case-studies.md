@@ -19,7 +19,7 @@ The Fern Forest skill is lean and stricter. It makes Godot work mandatory for al
 
 - strong trigger wording
 - explicit `.tscn`/`.tres` gotchas
-- validation scripts
+- Godot CLI check scripts
 - progressive disclosure through reference files
 - no automatic installation of test frameworks
 
@@ -28,7 +28,7 @@ The Fern Forest skill is lean and stricter. It makes Godot work mandatory for al
 - no mandatory dependency on Godot MCP servers
 - focus on Godot 4.x and reusable project-neutral guidance
 - scene-as-code and semantic layout as optional workflows
-- validation gates include screenshots and runtime evidence
+- completion evidence includes screenshots and runtime evidence
 - Godot MCP is optional helper tooling, not the authoring source of truth
 
 ## License Constraint

@@ -1,19 +1,19 @@
-# Validation Gates
+# Completion Evidence
 
 Use this before claiming Godot work is complete.
 
 ## Contents
 
-- Minimum Gate
-- Script Gate
-- Scene And Resource Gate
-- Scene Generation Gate
-- Visual Gate
-- Export Gate
-- Version Upgrade Gate
+- Minimum Evidence
+- Script Evidence
+- Scene And Resource Evidence
+- Scene Generation Evidence
+- Visual Evidence
+- Export Evidence
+- Version Upgrade Evidence
 - Report Format
 
-## Minimum Gate
+## Minimum Evidence
 
 Run from the Godot project root when Godot is available:
 
@@ -30,7 +30,7 @@ bash /path/to/godot-best-practice/scripts/check_gd_syntax.sh /path/to/project
 
 If the repo does not include a local syntax script, use the skill script or a targeted Godot `--check-only` command.
 
-## Script Gate
+## Script Evidence
 
 For changed `.gd` files:
 
@@ -40,7 +40,7 @@ godot --headless --script res://path/to/script.gd --check-only
 
 For C# projects, also run the project's normal .NET/Godot build workflow if present.
 
-## Scene And Resource Gate
+## Scene And Resource Evidence
 
 For changed scenes/resources:
 
@@ -49,17 +49,17 @@ For changed scenes/resources:
 3. assert required child nodes, exported dependencies, and groups exist
 4. run a short smoke script if behavior changed
 
-## Scene Generation Gate
+## Scene Generation Evidence
 
 For generated scenes:
 
-1. validate layout JSON if a schema exists
+1. check layout JSON against a schema if one exists
 2. run the generator
 3. run `godot --headless --import`
 4. open or load the generated scene through Godot
 5. run a smoke script that verifies required node names/groups exist
 
-## Visual Gate
+## Visual Evidence
 
 For UI, 2D layout, 3D layout, lighting, camera, collision visibility, or animation timing, text inspection is insufficient.
 
@@ -79,7 +79,7 @@ Check:
 - UI does not overlap or clip at target resolutions
 - lighting/camera changes are visible in runtime
 
-## Export Gate
+## Export Evidence
 
 For export changes:
 
@@ -94,7 +94,7 @@ Example:
 godot --headless --export-release "Web" build/web/index.html
 ```
 
-## Version Upgrade Gate
+## Version Upgrade Evidence
 
 For Godot version upgrades or broad portability work:
 
@@ -111,8 +111,8 @@ Final agent response should include:
 ```text
 Godot version:
 Commands run:
-Visual validation:
-Export validation:
+Visual evidence:
+Export evidence:
 Known blocked checks:
 Files changed:
 ```
