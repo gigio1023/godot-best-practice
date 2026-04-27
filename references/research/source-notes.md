@@ -11,7 +11,7 @@ Observed focus:
 - general Godot Engine project guidance
 - `.gd`, `.tscn`, and `.tres` file-format awareness
 - component-based and signal-driven architecture
-- validation scripts for `.tres` and `.tscn`
+- check scripts for `.tres` and `.tscn`
 - templates for components, attributes, interactions, items, and spell resources
 
 Useful lessons to copy:
@@ -23,10 +23,10 @@ Useful lessons to copy:
 
 What this repo changes:
 
-- includes Godot-specific file, CLI, and validation guidance
+- includes Godot-specific file, CLI, and runtime evidence guidance
 - adds semantic layout guidance
 - makes MCP optional instead of central
-- adds validation gates for runtime, visual, and export-sensitive changes
+- adds evidence expectations for runtime, visual, and export-sensitive changes
 
 ## fernforestgames/agent-skill-godot
 

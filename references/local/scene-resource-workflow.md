@@ -23,7 +23,7 @@ Preferred control path:
 2. Behavior scripts: `.gd` or C# scripts that own runtime behavior.
 3. Generator/editor scripts when scenes are large or repetitive.
 4. Saved Godot resources/scenes.
-5. Import, load, runtime, and visual validation.
+5. Import, load, runtime, and visual evidence.
 
 ## Safer Direct Edits
 
@@ -78,7 +78,7 @@ Before editing:
 - identify whether the scene is hand-authored, imported, or generated
 - find attached scripts and dependent resources
 - preserve resource ids unless deliberately updating all references
-- avoid changing UID/path semantics without validation
+- avoid changing UID/path semantics without a follow-up Godot check
 
 After editing:
 
@@ -135,7 +135,7 @@ Do not edit `.godot/imported/` as source. Change:
 - post-import script
 - material/resource overrides that are meant to be source-controlled
 
-Validate imported assets with `godot --headless --import`, then inspect scale, orientation, materials, animation clips, and collision setup.
+Check imported assets with `godot --headless --import`, then inspect scale, orientation, materials, animation clips, and collision setup.
 
 ## Resources As Data
 

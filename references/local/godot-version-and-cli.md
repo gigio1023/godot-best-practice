@@ -38,7 +38,7 @@ If `godot` is not on `PATH`, try common environment variables or ask for the bin
 ${GODOT_PATH:-godot} --version
 ```
 
-## CLI Validation Commands
+## CLI Check Commands
 
 Run from the Godot project root unless paths are absolute.
 
