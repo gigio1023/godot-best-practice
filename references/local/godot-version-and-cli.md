@@ -4,11 +4,11 @@ Use this reference when starting Godot work, checking current version assumption
 
 ## Version Baseline
 
-Last verified on 2026-04-27: Godot 4.6.2 was the current stable release checked while writing this skill, and the official stable docs branch pointed at Godot 4.6.
+Last verified on 2026-05-29: Godot 4.6.3 was the current stable release checked while updating this skill, and the official stable docs branch pointed at Godot 4.6.
 
 Primary official sources:
 
-- https://godotengine.org/article/maintenance-release-godot-4-6-2/
+- https://godotengine.org/article/maintenance-release-godot-4-6-3/
 - https://docs.godotengine.org/en/stable/
 - https://github.com/godotengine/godot-docs
 

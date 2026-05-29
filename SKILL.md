@@ -1,7 +1,7 @@
 ---
 name: godot-best-practice
 description: >
-  Use this skill for any Godot 4.x project work: GDScript, C#, scenes, resources, nodes, signals, 2D, 3D, UI, physics, animation, navigation, shaders, import/export, plugins, testing, version upgrades, and agent-authored workflows. Trigger for "Godot", "GDScript", "tscn", "tres", "Godot best practice", "Godot 문법", "Godot 활용법", "Godot 패턴", "Godot 씬", "Godot 2D/3D/UI/physics/export", and Korean requests about Godot implementation or architecture. Prefer this skill before editing Godot files or giving Godot guidance.
+  Godot 4.x implementation and architecture guidance for coding agents. Use before editing or advising on Godot projects: GDScript/C#, scenes, resources, nodes, signals, UI, physics, animation, navigation, shaders, import/export, plugins, testing, version upgrades, and generated workflows. Trigger on "Godot", "GDScript", "tscn", "tres", "Godot 문법", "Godot 패턴", "Godot 씬", and Korean Godot implementation or architecture requests.
 version: 2.0.0
 tags:
   - godot
@@ -22,7 +22,7 @@ Default agent workflow:
 1. Read `project.godot` first, then nearby `.gd`, `.tscn`, `.tres`, import, and addon files.
 2. Identify the Godot version and language stack before giving version-sensitive advice.
 3. Prefer Godot-native architecture: scenes as composition, scripts as behavior, resources as data, signals/groups for loose coupling, and project settings/input maps for shared configuration.
-4. For details beyond this skill, read the official docs snapshot in `~/git/godot-docs` when present, or fetch from official Godot docs/GitHub using `references/local/official-docs-index.md`.
+4. For details beyond this skill, read the official docs snapshot in `~/git/godot-docs` when present. If that path is missing, do not block; fetch from official Godot docs/GitHub using `references/local/official-docs-index.md`.
 5. After edits, run the narrowest meaningful Godot checks: import, syntax, scene load, targeted smoke tests, and visual evidence when layout matters.
 
 ## Reference Files
@@ -38,7 +38,8 @@ Default agent workflow:
 | `references/local/completion-evidence.md` | Before claiming Godot work is complete | Import, syntax, scene-load, smoke, visual, export, and upgrade evidence |
 | `references/local/mcp-integration.md` | User asks about editor automation or Godot MCP | MCP role, file-first source of truth, security checks |
 | `references/local/3d-generation-patterns.md` | Building generated 3D layouts | Semantic layout data, anchors, routes, inspection cameras |
-| `references/research/source-notes.md` | Comparing this skill to public Godot skills | Source notes and attribution |
+
+`docs/` is authoring-only material for maintaining this skill. Do not use it as part of the normal Godot project workflow.
 
 ## Detailed Workflow
 
