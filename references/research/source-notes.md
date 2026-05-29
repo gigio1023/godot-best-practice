@@ -1,6 +1,6 @@
 # Source Notes
 
-Research performed on 2026-04-27.
+Research performed on 2026-04-27. Godot release baseline refreshed on 2026-05-29.
 
 ## MCP.Directory godot skill
 
@@ -57,7 +57,7 @@ What this repo changes:
 
 ## Official Godot docs used
 
-- Godot 4.6.2 release: https://godotengine.org/article/maintenance-release-godot-4-6-2/
+- Godot 4.6.3 release: https://godotengine.org/article/maintenance-release-godot-4-6-3/
 - Renderers: https://docs.godotengine.org/en/4.6/tutorials/rendering/renderers.html
 - Importing 3D scenes: https://docs.godotengine.org/en/4.6/tutorials/assets_pipeline/importing_3d_scenes/index.html
 - Command line tutorial: https://docs.godotengine.org/en/latest/tutorials/editor/command_line_tutorial.html
