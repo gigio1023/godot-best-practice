@@ -1,25 +1,39 @@
-# Codex Install
+# Codex install
 
-## Preferred
+The installable skill is `skills/godot-best-practice/` in this repository.
+
+## Skills CLI
+
+Project scope:
 
 ```bash
 npx skills add gigio1023/godot-best-practice --agent codex
 ```
 
-## Manual install
-
-Install into the shared agents skill directory:
+User scope:
 
 ```bash
-mkdir -p ~/.agents/skills
-git clone git@github.com:gigio1023/godot-best-practice.git ~/.agents/skills/godot-best-practice
+npx skills add gigio1023/godot-best-practice --agent codex --global
 ```
 
-For a project-local install:
+Codex discovers project skills in `.agents/skills/` and user skills in
+`$HOME/.agents/skills/`.
+
+## Development checkout
+
+Clone the repository somewhere stable, then link the payload rather than the
+repository root:
 
 ```bash
-mkdir -p .codex/skills
-git clone git@github.com:gigio1023/godot-best-practice.git .codex/skills/godot-best-practice
+git clone https://github.com/gigio1023/godot-best-practice.git "$HOME/git/godot-best-practice"
+mkdir -p "$HOME/.agents/skills"
+ln -s "$HOME/git/godot-best-practice/skills/godot-best-practice" \
+  "$HOME/.agents/skills/godot-best-practice"
 ```
 
-Use the skill when working on Godot 4.x projects: GDScript, C#, scenes, resources, 2D, 3D, UI, physics, navigation, rendering, shaders, import/export, version upgrades, or runtime evidence checks.
+For a project-only link, place it under
+`.agents/skills/godot-best-practice` instead.
+
+After updating the checkout, verify `SKILL.md`, every linked reference, and the
+bundled script before relying on the skill. Do not use `skills check` as a lint
+command in Skills CLI 1.5.15; it is an update alias.

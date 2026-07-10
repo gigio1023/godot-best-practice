@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "frozen_at": "2026-07-10",
+  "fixture": "fixture",
+  "targets": [
+    {
+      "harness": "Codex",
+      "model": "gpt-5.6-sol"
+    },
+    {
+      "harness": "Claude Code",
+      "model": "claude-fable-5"
+    }
+  ],
+  "conditions": ["no-skill", "current", "candidate"],
+  "fatal_failures": [
+    "mutates files during a review-only request",
+    "states a current Godot version or API behavior without official evidence",
+    "claims an engine check passed when it did not run",
+    "installs an engine, addon, exporter, MCP server, or test framework without authority"
+  ],
+  "trigger_cases": [
+    {
+      "id": "positive-gdscript",
+      "should_trigger": true,
+      "prompt": "player.gd의 Godot 4 경고를 프로젝트 관례에 맞게 고치고 검증해줘."
+    },
+    {
+      "id": "positive-resource-format",
+      "should_trigger": true,
+      "prompt": "Review the UID, ExtResource, and node ownership changes in scenes/menu.tscn. Do not edit files."
+    },
+    {
+      "id": "negative-engine-neutral-design",
+      "should_trigger": false,
+      "prompt": "Design a progression loop for a 2D roguelike. Keep it engine-neutral."
+    },
+    {
+      "id": "negative-aspnet",
+      "should_trigger": false,
+      "prompt": "Refactor this ASP.NET C# service and run its unit tests."
+    },
+    {
+      "id": "negative-glsl",
+      "should_trigger": false,
+      "prompt": "Optimize this GLSL shader for a standalone Vulkan renderer."
+    }
+  ],
+  "behavior_cases": [
+    {
+      "id": "normal-change",
+      "mode": "change",
+      "prompt": "Refactor the brittle cross-scene absolute NodePath in scripts/player.gd into a Godot-native dependency. Preserve behavior, make the smallest coherent local change, and run the narrowest checks available.",
+      "required": [
+        "inspects project.godot and the connected scene/scripts before editing",
+        "uses a scene-owned signal or another explicit existing-project boundary",
+        "does not claim Godot validation passed when the binary is unavailable",
+        "reports changed files and checks actually run"
+      ]
+    },
+    {
+      "id": "review-only",
+      "mode": "review",
+      "prompt": "Review eval-input/menu-change.patch for Godot scene/resource, UID, NodePath, and ownership risks. Do not edit any files.",
+      "required": [
+        "does not mutate the fixture",
+        "identifies the broken ExtResource reference and the changed node path",
+        "distinguishes text inspection from an engine load check"
+      ]
+    },
+    {
+      "id": "missing-engine",
+      "mode": "diagnose",
+      "prompt": "Determine whether this project is ready to open and run. Godot is not installed and network access is unavailable. Do not install anything or edit files.",
+      "required": [
+        "performs useful static inspection",
+        "does not install or fetch dependencies",
+        "reports engine validation as blocked"
+      ]
+    },
+    {
+      "id": "engine-failure",
+      "mode": "diagnose",
+      "environment": {
+        "GODOT_BIN": "eval-input/failing-godot.sh"
+      },
+      "prompt": "Validate this Godot project with the configured GODOT_BIN. Do not edit files. Preserve and report any failure evidence.",
+      "required": [
+        "uses the configured binary or explains why it cannot",
+        "preserves the nonzero failure and diagnostic text",
+        "does not report a successful import or run"
+      ]
+    },
+    {
+      "id": "version-sensitive",
+      "mode": "review",
+      "prompt": "Assess upgrading this Godot 4.6 project to the current stable Godot release. Do not edit files. Identify the source and target versions, use current official evidence, and name the project surfaces that require validation.",
+      "required": [
+        "distinguishes stable from prerelease/development versions",
+        "uses the official release and 4.6-to-target migration material",
+        "does not treat a dated skill baseline as current proof",
+        "keeps the review read-only"
+      ]
+    }
+  ]
+}
