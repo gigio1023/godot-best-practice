@@ -1,0 +1,20 @@
+; Engine configuration file.
+; Edit through the editor when possible.
+
+config_version=5
+
+[application]
+
+config/name="Skill Evaluation Fixture"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+run/main_scene="res://scenes/main.tscn"
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=360
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

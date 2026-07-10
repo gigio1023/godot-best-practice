@@ -1,0 +1,19 @@
+diff --git a/scenes/menu.tscn b/scenes/menu.tscn
+index 744f09c..2bdf433 100644
+--- a/scenes/menu.tscn
++++ b/scenes/menu.tscn
+@@ -1,13 +1,13 @@
+ [gd_scene load_steps=2 format=3]
+ 
+-[ext_resource type="Script" path="res://scripts/menu.gd" id="1_menu"]
++[ext_resource type="Script" path="res://scripts/missing_menu.gd" id="1_menu"]
+ 
+ [node name="Menu" type="Control"]
+ script = ExtResource("1_menu")
+ 
+ [node name="Panel" type="PanelContainer" parent="."]
+ 
+-[node name="PlayButton" type="Button" parent="Panel"]
++[node name="StartButton" type="Button" parent="Panel"]
+ unique_name_in_owner = true
+ text = "Play"

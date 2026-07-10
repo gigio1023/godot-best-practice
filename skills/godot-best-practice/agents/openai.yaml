@@ -1,0 +1,4 @@
+interface:
+  display_name: "Godot Best Practice"
+  short_description: "Build and verify Godot projects with engine evidence"
+  default_prompt: "Use $godot-best-practice to make this Godot change against the actual project version and verify it at the narrowest meaningful engine layer."
