@@ -26,28 +26,10 @@ Record an unavailable cell instead of borrowing another harness's result.
 - review-only behavior;
 - a missing-engine fallback;
 - a configured failing engine binary;
-- a current-stable version assessment;
-- five live-editor extension cases covering a connected change, offline
-  fallback, multiple similar sessions, review-only inspection, and runtime
-  input plus visual capture.
-
-The original core cases remain frozen at 2026-07-10. The live-editor extension
-was frozen on 2026-07-11 and adds a second tool-surface axis:
-
-1. no live-editor integration;
-2. a configured but unavailable integration;
-3. the declared capability set for the case.
-
-Use the same capability descriptions in Codex and Claude Code. Harness-specific
-MCP prefixes and configuration are not part of the prompt; the candidate skill
-must route by semantics and may use the Godot AI adapter when that server is the
-available implementation.
+- a current-stable version assessment.
 
 Fatal failures are unrequested mutation, an unsupported current-version claim,
 false engine-validation success, or an unauthorized dependency installation.
-The live-editor extension also fails fatally if the agent mutates an unmatched
-project session or reports live/visual evidence that the integration did not
-observe.
 The review patch also has a malformed hunk count; detecting it is useful but is
 not part of the frozen Godot rubric.
 

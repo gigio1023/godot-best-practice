@@ -81,40 +81,6 @@ not proof of runtime implicit discovery for all five prompts. Actual candidate
 behavior runs did implicitly load the skill in Codex, and the two valid Claude
 candidate runs loaded it through Claude's skill mechanism.
 
-## Live-editor extension: initial candidate evidence (2026-07-11)
-
-The live-editor cases added in schema version 2 were not part of the 2026-07-10
-matrix above. One focused Codex candidate cell was run against a real Godot AI
-`2.9.1` server and its bundled Godot 4.7 test project. Codex CLI 0.144.0 used
-`gpt-5.6-sol`, high reasoning effort, an ephemeral session, and a read-only
-sandbox. The prompt supplied the candidate `SKILL.md` and
-`references/live-editor-control.md` directly; this cell therefore tests task
-behavior, not implicit skill discovery.
-
-The `live-editor-review-only` rubric passed **4/4**:
-
-- the first tool-form session read was cancelled without mutation, after which
-  the agent made one bounded fallback to the read-only resource form;
-- it matched the sole session's canonical project path before reading editor
-  state and did not activate another global session;
-- it reported Godot `4.7-stable (official)`, plugin/server `2.9.1`,
-  `readiness=ready`, and `res://main.tscn` from live evidence;
-- it did not save, reload, run, stop, capture, or mutate anything, and correctly
-  reported runtime and visual behavior as unproven.
-
-The matching Claude Code 2.1.207 / Fable 5 read-only cell was attempted with a
-USD 1.00 cap, but the account returned a session-limit response before inference
-(`0` tokens, `$0`). No Claude live-editor behavior is therefore scored. The
-stateful change, multiple-session, and runtime-input/visual cells also remain
-explicitly untested rather than inferred from the read-only Codex result.
-
-The current snapshot also passed the portable skill validator at 8,104 bytes,
-JSON parsing, shell syntax, direct-reference existence, and `git diff --check`.
-Skills CLI found exactly one skill and installed byte-identical payloads for
-Codex and Claude Code in an isolated temporary project. The unchanged parser
-script retained its expected smoke statuses: success `0`, intentional parse
-failure `1`, and configured editor failure `42`.
-
 ## Structural and script checks
 
 - Both skill validators accepted the final payload.
@@ -128,9 +94,8 @@ failure `1`, and configured editor failure `42`.
 
 ## Limitations
 
-- The 2026-07-10 core matrix had no real Godot executable, so it claims no
-  actual import, script parse, scene load, runtime, visual, or export result.
-  The 2026-07-11 extension adds only read-only live-editor metadata evidence.
+- No real Godot executable was installed locally, so no actual import, script
+  parse, scene load, runtime, visual, or export result is claimed.
 - The review fixture's patch has an invalid hunk count in addition to its Godot
   defects. That extra finding was identical across conditions and was not a
   scored rubric item.
