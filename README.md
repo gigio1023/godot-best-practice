@@ -63,6 +63,23 @@ The common `SKILL.md` contains no Claude-only or Codex-only invocation, tool, or
 permission syntax. Installation and UI metadata stay in adapters so the domain
 contract remains usable in both harnesses.
 
+## Optional live editor control
+
+The portable baseline remains file editing plus the Godot CLI. When a compatible
+live-editor integration is already configured, the skill now prefers it for
+editor-owned scene changes, runtime input and inspection, logs, and visual
+capture, while keeping code-heavy edits, CI, and exports on their stronger
+file/CLI paths.
+
+[Godot AI](https://github.com/hi-godot/godot-ai) is the first recommended
+adapter. The skill verifies the exact project session and readiness before
+stateful calls, combines file edits with live reload and play evidence, and
+falls back cleanly when the integration is missing or offline. Godot AI is not
+a package dependency: installing this skill never installs or configures an MCP
+server or project addon. The versioned capability mapping and safety rules live
+in
+[`references/live-editor-control.md`](skills/godot-best-practice/references/live-editor-control.md).
+
 ## Try it
 
 - `Fix this GDScript using the project's Godot version and run the narrowest useful checks.`
@@ -120,7 +137,7 @@ godot-best-practice/
 ├── README.md                    # Why, scope, install, and maintenance entry point
 ├── skills/godot-best-practice/ # Complete installable payload
 │   ├── SKILL.md                # Portable Godot task contract
-│   ├── references/             # Versioned, one-level domain guidance
+│   ├── references/             # Versioned domain guidance + optional live-editor adapter
 │   ├── scripts/                # Deterministic GDScript parser check
 │   └── agents/openai.yaml      # Optional Codex UI adapter
 ├── .codex/INSTALL.md
