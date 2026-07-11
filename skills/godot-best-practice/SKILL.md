@@ -15,9 +15,9 @@ needs.
 1. Classify the request as answer/review/diagnosis or change/build.
 2. Locate `project.godot`; inspect the project version, language stack, renderer,
    addons, export setup, nearby scenes/resources/scripts, and repository rules.
-3. Read only the references needed for the affected surface. Verify exact or
-   current behavior against version-matched official documentation or engine
-   source instead of relying on memory.
+3. Read only the references needed for the affected surface, select the
+   strongest available control surface, and verify version-sensitive behavior
+   against matching official documentation or engine source.
 4. Choose Godot-native ownership and data boundaries, then make the smallest
    coherent change that preserves existing conventions.
 5. Validate at the layer that can actually prove the claim: parse, import,
@@ -61,6 +61,18 @@ needs.
 - Use `res://` for project resources and `user://` for persistent writable data.
   Do not treat imported resources as ordinary runtime files.
 
+## Choose The Control Surface
+
+- Keep files and the Godot CLI for code/bulk edits, CI, and export. Prefer a
+  connected live editor for scene/inspector mutations, runtime input, logs, and
+  screenshots; combine both paths when that proves more.
+- Godot AI is the recommended first-class integration. Before its first
+  stateful call, read `references/live-editor-control.md`, match the exact
+  project root/version, require readiness, and route multiple sessions exactly.
+- Apply the same authority and trust boundary as the equivalent editor action.
+  Never install/configure the integration implicitly; fall back to files/CLI
+  and mark unobserved live or visual evidence blocked.
+
 ## Choose The Right Godot Surface
 
 - Put editable composition and ownership in scenes.
@@ -79,18 +91,11 @@ needs.
 
 ## Prove The Requested Claim
 
-Match evidence to the surface instead of running a ritual command list:
-
-- Script/API claim: version-matched API lookup plus targeted parse or build.
-- Scene/resource claim: import and load/instantiate the affected scene or
-  resource; inspect required nodes, paths, owners, and dependencies.
-- Behavior claim: targeted project test or bounded scene/runtime smoke check.
-- UI, animation, camera, lighting, or layout claim: runtime capture at relevant
-  sizes or viewpoints in addition to non-visual checks.
-- Export claim: inspect the preset, platform requirements, templates, and an
-  export attempt; launch the artifact when the claim includes runtime success.
-- Upgrade claim: migration guide, import with the target version, representative
-  runtime/visual checks, and export checks for affected targets.
+Match evidence to the claim: versioned API evidence plus parse/build for code;
+import and load for scenes/resources; a targeted test or smoke for behavior;
+runtime capture for UI, camera, animation, lighting, or layout; and a real
+artifact plus launch/inspection for export. An upgrade also needs the applicable
+migration guide and representative runtime, visual, and export evidence.
 
 Do not call the engine's `--test` flag a project test: it runs engine C++ tests
 only in builds compiled with test support. Use a GDScript or C# test framework
@@ -110,6 +115,7 @@ run. Never install a replacement or report a pass by inference.
 | `references/architecture.md` | Choosing scene, node, resource, signal, group, autoload, and ownership boundaries |
 | `references/domains-and-export.md` | Working in 2D, 3D, UI, physics, navigation, rendering, shaders, assets, or export |
 | `references/validation.md` | Selecting commands, runtime/visual evidence, failure handling, and completion criteria |
+| `references/live-editor-control.md` | Choosing live-editor capabilities and using the optional Godot AI adapter safely |
 
 The bundled `scripts/check_gdscript.sh` parses project GDScript files with a
 configured Godot binary. Resolve the active skill directory first and execute
@@ -123,17 +129,11 @@ the script; do not assume the skill lives inside the target project.
   selected binary's `--help` and require the expected artifact or log.
 - `.godot/` is generated cache, while an asset's adjacent `.import` file is
   source-controlled import metadata in normal Godot workflows.
-- Engine import, script parsing, scene runs, and builds can execute project code
-  or update cache state; they are not read-only review operations.
-- Godot's `--test` is for engine C++ tests in a test-enabled build, not the
-  project's gameplay tests.
 
 ## Stop And Report
 
-Stop when the narrowest evidence that proves the requested outcome passes and no
-material error remains. Retry only when the failure is transient or a corrected
-input makes the same check meaningful.
+Stop when the narrowest sufficient evidence passes. Retry only for a transient
+failure or corrected input.
 
-Lead the final response with the outcome. Include the project and engine version
-used or inferred, changed files, official sources consulted for version-sensitive
-decisions, checks and evidence actually collected, and blocked or residual risk.
+Lead with the outcome, then report the project/engine version, changed files,
+version-sensitive sources, checks run, and blocked or residual evidence.
