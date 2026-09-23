@@ -87,19 +87,14 @@ rg -n "ClassName|method_name" "$GODOT_SOURCE/scene" "$GODOT_SOURCE/core" "$GODOT
 
 ## Current Verified Baseline
 
-Verified on 2026-07-10:
+Verified on 2026-09-23:
 
-- Latest stable release: Godot 4.7, released 2026-06-18.
-- Engine tag: `4.7-stable` at
-  `5b4e0cb0fd279832bbdd69fed5354d4e5ad26f88`.
-- Matching docs branch: `4.7` at
-  `0585d03bea24497cf91f0969c81a187c892371c4`.
-- `4.7.1-rc2` and `4.8-dev1` were prerelease/development builds, not newer
-  stable releases.
+- Latest stable release: Godot 4.7.2, released 2026-08-18. The earlier 4.7 releases were 4.7.1 on 2026-07-14 and 4.7 on 2026-06-18.
+- Engine tag: `4.7.2-stable` at `ed1daf0bf001b61586d9930840f2f1394092c079`.
+- Matching docs branch: `4.7` at `9adca4c1c72917bfe1b7be3108abed5ce26696a6`.
+- `4.8-dev6`, published 2026-09-15, is a development build, not a newer stable release.
 
-Recheck official releases before answering any later "latest" or "current"
-request. See `docs/source-provenance.md` in the repository checkout for the
-authoring evidence; that maintainer document is not required at runtime.
+Recheck official releases before answering any later "latest" or "current" request. The skill itself was authored on 2026-07-10 against `4.7-stable` at `5b4e0cb0fd279832bbdd69fed5354d4e5ad26f88`; see `docs/source-provenance.md` in the repository checkout for that authoring evidence. The maintainer document is not required at runtime.
 
 High-impact 4.6/4.7 details include:
 

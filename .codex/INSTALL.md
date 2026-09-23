@@ -34,6 +34,4 @@ ln -s "$HOME/git/godot-best-practice/skills/godot-best-practice" \
 For a project-only link, place it under
 `.agents/skills/godot-best-practice` instead.
 
-After updating the checkout, verify `SKILL.md`, every linked reference, and the
-bundled script before relying on the skill. Do not use `skills check` as a lint
-command in Skills CLI 1.5.15; it is an update alias.
+After updating the checkout, verify `SKILL.md`, every linked reference, and the bundled script before relying on the skill. Do not use `skills check` as a lint command; in Skills CLI 1.5.15 through 1.7.0 it is an alias for `skills update`.

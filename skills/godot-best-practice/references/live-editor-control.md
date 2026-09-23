@@ -71,11 +71,9 @@ authority, a trusted project, and no narrower operation that proves the claim.
 
 ## Godot AI adapter
 
-This mapping was checked against
-[hi-godot/godot-ai `v2.9.1`](https://github.com/hi-godot/godot-ai/tree/v2.9.1)
-at commit `0ffbce6ef167e4f22e8d0674181ad06d9feeae79`. Recheck the upstream tool
-catalog and compatibility behavior before changing the mapping or asserting it
-for a different version.
+This mapping was checked on 2026-09-23 against [hi-godot/godot-ai `v4.2.1`](https://github.com/hi-godot/godot-ai/tree/v4.2.1) at commit `bfc264200584ea5823f18356acb164781f57796d`, including its `docs/TOOLS.md`. Recheck the upstream tool catalog and compatibility behavior before changing the mapping or asserting it for a different version.
+
+Godot AI v4 requires Godot 4.7 or newer, and v3 and v4 plugins and servers do not interoperate. A client connects only through the `godot-ai attach` stdio command that the editor dock's **Configure** writes or its **Run this manually** fallback shows; a bare `http://127.0.0.1:8000/mcp` entry cannot authenticate. Treat an older Godot version, a mismatched plugin and server, or a bare HTTP client entry as unavailable capability, not as permission to upgrade or reconfigure the integration.
 
 Use unqualified server tool names here; Codex and Claude Code may expose them
 under different MCP prefixes.
