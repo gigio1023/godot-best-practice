@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 496" width="720" height="496" role="img" aria-labelledby="title desc">
+  <title id="title">MCP client path to the Godot editor bridge, before and after</title>
+  <desc id="desc">Before: with Godot AI v2.9.1 the MCP client connects over HTTP /mcp on port 8000 to the Python server, which reaches the Godot editor plugin over WebSocket on port 9500. After: with Godot AI v4.2.1 on Godot 4.7+, the client starts godot-ai attach over stdio, which reaches the Python server over authenticated HTTP, and the server reaches the plugin over authenticated WebSocket.</desc>
+  <defs>
+    <marker id="arrow-ink" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse" overflow="visible">
+      <path d="M1 1 L7 4 L1 7" fill="none" stroke="#CCCCCC" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse" overflow="visible">
+      <path d="M1 1 L7 4 L1 7" fill="none" stroke="#8386EB" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse" overflow="visible">
+      <path d="M1 1 L7 4 L1 7" fill="none" stroke="#929591" stroke-width="1.2"/>
+    </marker>
+  </defs>
+  <style>
+    .entity { font-family: "IBM Plex Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 14px; fill: #FFFFFF; text-anchor: middle; }
+    .sub { font-family: "IBM Plex Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 12px; fill: #CCCCCC; text-anchor: middle; }
+    .edge { font-family: "IBM Plex Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 12px; fill: #CCCCCC; }
+    .panel { font-family: "IBM Plex Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 12px; fill: #929591; letter-spacing: 0.04em; }
+    .hot-text { fill: #FFBDA1; }
+    .muted-text { fill: #929591; }
+    .box { fill: #0D0D0D; stroke: #CCCCCC; stroke-width: 1.2; }
+    .box-accent { fill: #0D0D0D; stroke: #8386EB; stroke-width: 1.2; }
+    .box-muted { fill: #0D0D0D; stroke: #929591; stroke-width: 1.2; stroke-dasharray: 2 2; }
+    .box-hot { fill: #0D0D0D; stroke: #FF9365; stroke-width: 1.2; }
+    .flow { fill: none; stroke: #CCCCCC; stroke-width: 1.2; }
+    .flow-accent { fill: none; stroke: #8386EB; stroke-width: 1.2; }
+    .flow-secondary { fill: none; stroke: #929591; stroke-width: 1.2; stroke-dasharray: 2 2; }
+    .rule { fill: none; stroke: #929591; stroke-width: 1.2; stroke-dasharray: 2 4; }
+  </style>
+  <rect width="720" height="496" rx="16" fill="#0D0D0D"/>
+  <text id="before-label" class="panel" x="24" y="36" text-anchor="start">BEFORE (main): Godot AI v2.9.1</text>
+  <g id="before-mcp-client">
+    <rect class="box" x="24" y="64" width="200" height="56" rx="16"/>
+    <text class="entity" x="124" y="96">MCP client</text>
+  </g>
+  <g id="before-python-server">
+    <rect class="box" x="24" y="288" width="200" height="56" rx="16"/>
+    <text class="entity" x="124" y="320">Python server</text>
+  </g>
+  <g id="before-godot-editor-plugin">
+    <rect class="box" x="24" y="400" width="200" height="56" rx="16"/>
+    <text class="entity" x="124" y="432">Godot editor plugin</text>
+  </g>
+  <g id="before-client-to-server">
+    <path class="flow" d="M124.0 120 V287" marker-end="url(#arrow-ink)"/>
+    <text class="edge" x="134.0" y="208.0" text-anchor="start">HTTP /mcp :8000</text>
+  </g>
+  <g id="before-server-to-plugin">
+    <path class="flow" d="M124.0 344 V399" marker-end="url(#arrow-ink)"/>
+    <text class="edge" x="134.0" y="376.0" text-anchor="start">WebSocket :9500</text>
+  </g>
+  <path id="divider" class="rule" d="M360 24 V472"/>
+  <text id="after-label" class="panel" x="384" y="36" text-anchor="start">AFTER: Godot AI v4.2.1</text>
+  <g id="after-mcp-client">
+    <rect class="box" x="384" y="64" width="200" height="56" rx="16"/>
+    <text class="entity" x="484" y="96">MCP client</text>
+  </g>
+  <g id="after-godot-ai-attach">
+    <rect class="box-accent" x="384" y="176" width="200" height="56" rx="16"/>
+    <text class="entity" x="484" y="208">godot-ai attach</text>
+  </g>
+  <g id="after-python-server">
+    <rect class="box" x="384" y="288" width="200" height="56" rx="16"/>
+    <text class="entity" x="484" y="320">Python server</text>
+  </g>
+  <g id="after-godot-editor-plugin">
+    <rect class="box" x="384" y="400" width="200" height="56" rx="16"/>
+    <text class="entity" x="484" y="423">Godot editor plugin</text>
+    <text class="sub" x="484" y="441">Godot 4.7+</text>
+  </g>
+  <g id="after-client-to-attach">
+    <path class="flow-accent" d="M484.0 120 V175" marker-end="url(#arrow-accent)"/>
+    <text class="edge" x="494.0" y="152.0" text-anchor="start">stdio</text>
+  </g>
+  <g id="after-attach-to-server">
+    <path class="flow" d="M484.0 232 V287" marker-end="url(#arrow-ink)"/>
+    <text class="edge" x="494.0" y="256.0" text-anchor="start">authenticated</text>
+    <text class="edge" x="494.0" y="272.0" text-anchor="start">HTTP :8000</text>
+  </g>
+  <g id="after-server-to-plugin">
+    <path class="flow" d="M484.0 344 V399" marker-end="url(#arrow-ink)"/>
+    <text class="edge" x="494.0" y="368.0" text-anchor="start">authenticated</text>
+    <text class="edge" x="494.0" y="384.0" text-anchor="start">WebSocket :9500</text>
+  </g>
+</svg>

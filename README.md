@@ -107,9 +107,10 @@ npx skills add gigio1023/godot-best-practice --agent codex --agent claude-code -
 ```
 
 The agent identifiers `codex` and `claude-code` and the complete nested-payload
-install were verified with Skills CLI 1.5.15. Project installs use
-`.agents/skills/` for Codex and `.claude/skills/` for Claude Code; user installs
-use `$HOME/.agents/skills/` and `$HOME/.claude/skills/` respectively.
+install were verified with Skills CLI 1.5.15 and rechecked against the Skills
+CLI 1.7.0 source on 2026-09-23. Project installs use `.agents/skills/` for Codex
+and `.claude/skills/` for Claude Code; user installs use `$HOME/.agents/skills/`
+and `$HOME/.claude/skills/` respectively.
 
 For a development checkout or manual symlink, follow the focused
 [Codex](.codex/INSTALL.md) or [Claude Code](.claude/INSTALL.md) guide.
@@ -146,10 +147,12 @@ godot-best-practice/
 └── evals/                      # Cross-harness fixtures, rubric, and results
 ```
 
-The primary evaluation targets are Codex with GPT-5.6 Sol and Claude Code with
-Claude Fable 5. The same fixture and rubric compare no skill, the previous skill,
-and this candidate; unavailable cells remain explicitly untested. See the
-[evaluation protocol](evals/README.md) and [recorded results](evals/results.md).
+The 2026-07-10 evaluation targeted Codex with GPT-5.6 Sol and Claude Code with
+Claude Fable 5; future runs target GPT-6 Sol in Codex 0.156.1 or later and
+Claude Fable 5.1 in Claude Code. The same fixture and rubric compare no skill,
+the previous skill, and this candidate; unavailable cells remain explicitly
+untested. See the [evaluation protocol](evals/README.md) and [recorded
+results](evals/results.md).
 
 ## License
 
