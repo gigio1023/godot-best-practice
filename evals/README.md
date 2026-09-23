@@ -1,6 +1,9 @@
 # Cross-Harness Evaluation
 
-This evaluation freezes the same Godot fixture, prompts, and success rubric across harnesses. The 2026-07-10 run targeted Codex with GPT-5.6 Sol and Claude Code with Claude Fable 5; future runs target GPT-6 Sol in Codex 0.156.1 or later and Claude Fable 5.1 in Claude Code.
+This evaluation freezes the same Godot fixture, prompts, and success rubric
+across harnesses. The 2026-07-10 run targeted Codex with GPT-5.6 Sol and Claude
+Code with Claude Fable 5; future runs target GPT-6 Sol in Codex 0.156.1 or later
+and Claude Fable 5.1 in Claude Code.
 
 See [the latest recorded results](results.md) for completed cells and explicit
 environment limitations.
@@ -51,7 +54,10 @@ Safe checks include frontmatter validation, direct-reference existence, script
 syntax/smoke tests, JSON parsing, and an isolated `skills add --list` or install
 into a temporary HOME/project.
 
-Do **not** use `skills check` as a lint command. In Skills CLI 1.5.15 through 1.7.0 it is a hidden alias for `skills update` and can rewrite installed user skills. Skills CLI 1.5.15 ran that update even when passed `--help`; in 1.7.0 a subcommand `--help` prints help before dispatch.
+Do **not** use `skills check` as a lint command. In Skills CLI 1.5.15 through
+1.7.0 it is a hidden alias for `skills update` and can rewrite installed user
+skills. Skills CLI 1.5.15 ran that update even when passed `--help`; in 1.7.0 a
+subcommand `--help` prints help before dispatch.
 
 ## Acceptance
 
