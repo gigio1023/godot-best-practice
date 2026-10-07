@@ -71,9 +71,9 @@ authority, a trusted project, and no narrower operation that proves the claim.
 
 ## Godot AI adapter
 
-This mapping was checked on 2026-09-23 against [hi-godot/godot-ai
-`v4.2.1`](https://github.com/hi-godot/godot-ai/tree/v4.2.1) at commit
-`bfc264200584ea5823f18356acb164781f57796d`, including its `docs/TOOLS.md`.
+This mapping was checked on 2026-10-07 against [hi-godot/godot-ai
+`v4.3.0`](https://github.com/hi-godot/godot-ai/tree/v4.3.0) at commit
+`b82b5c519b1b17228f70d8effce1626f391bd1dd`, including its `docs/TOOLS.md`.
 Recheck the upstream tool catalog and compatibility behavior before changing the
 mapping or asserting it for a different version.
 
