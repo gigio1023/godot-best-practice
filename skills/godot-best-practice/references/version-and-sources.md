@@ -87,13 +87,13 @@ rg -n "ClassName|method_name" "$GODOT_SOURCE/scene" "$GODOT_SOURCE/core" "$GODOT
 
 ## Current Verified Baseline
 
-Verified on 2026-09-23:
+Verified on 2026-10-07:
 
 - Latest stable release: Godot 4.7.2, released 2026-08-18. The earlier 4.7
   releases were 4.7.1 on 2026-07-14 and 4.7 on 2026-06-18.
 - Engine tag: `4.7.2-stable` at `ed1daf0bf001b61586d9930840f2f1394092c079`.
 - Matching docs branch: `4.7` at `9adca4c1c72917bfe1b7be3108abed5ce26696a6`.
-- `4.8-dev6`, published 2026-09-15, is a development build, not a newer stable
+- `4.8-dev7`, published 2026-10-01, is a development build, not a newer stable
   release.
 
 Recheck official releases before answering any later "latest" or "current"
