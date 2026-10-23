@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 640" data-figure="technical-figure">
+  <g data-id="source">
+    <rect class="box" x="260" y="24" width="200" height="56"/>
+    <text class="t" x="360" y="47" text-anchor="middle">Blender source</text>
+    <text class="t2 mono" x="360" y="66" text-anchor="middle">.blend</text>
+  </g>
+  <text data-id="route-choice" class="ta" x="360" y="119" text-anchor="middle">Choose one import route</text>
+  <g><path data-id="export" class="edge" d="M300 80 V100 H160 V148" data-arrow="end"/></g>
+  <g><path data-id="direct-import" class="edge" d="M420 80 V100 H560 V148" data-arrow="end"/></g>
+  <g data-id="glb">
+    <rect class="box" x="40" y="148" width="240" height="64"/>
+    <text class="t" x="160" y="174" text-anchor="middle">GLB export</text>
+    <text class="t2" x="160" y="195" text-anchor="middle">Blender used at export time</text>
+  </g>
+  <g data-id="blend">
+    <rect class="box" x="440" y="148" width="240" height="64"/>
+    <text class="t" x="560" y="174" text-anchor="middle">Direct .blend import</text>
+    <text class="t2" x="560" y="195" text-anchor="middle">Blender on every import host</text>
+  </g>
+  <g><path data-id="import-glb" class="edge" d="M160 212 V248 H316 V288" data-arrow="end"/></g>
+  <g><path data-id="import-blend" class="edge" d="M560 212 V248 H404 V288" data-arrow="end"/></g>
+  <g data-id="imported">
+    <rect class="box" x="244" y="288" width="232" height="64"/>
+    <text class="t" x="360" y="314" text-anchor="middle">Godot imported scene</text>
+    <text class="t2" x="360" y="335" text-anchor="middle">Generated resources</text>
+  </g>
+  <g>
+    <path data-id="compose" class="edge emph blue" d="M360 352 V408" data-arrow="end"/>
+    <text class="tl" x="372" y="383">instance or inherit</text>
+  </g>
+  <g data-id="game">
+    <rect class="box focus blue" x="244" y="408" width="232" height="72"/>
+    <text class="t" x="360" y="437" text-anchor="middle">Game-owned .tscn</text>
+    <text class="t2" x="360" y="459" text-anchor="middle">Gameplay and local overrides</text>
+  </g>
+  <g>
+    <path data-id="verify" class="edge" d="M360 480 V524"/>
+    <text class="tl" x="372" y="505">verify the change</text>
+  </g>
+  <path data-id="reimport-check" class="edge" d="M360 524 H128 V556" data-arrow="end"/>
+  <path data-id="runtime-check" class="edge" d="M360 524 V556" data-arrow="end"/>
+  <path data-id="export-check" class="edge" d="M360 524 H592 V556" data-arrow="end"/>
+  <circle data-id="verification-branch" class="dot" cx="360" cy="524" r="2.4"/>
+  <g data-id="reimport">
+    <rect class="box" x="40" y="556" width="176" height="60"/>
+    <text class="t" x="128" y="581" text-anchor="middle">Reimport</text>
+    <text class="t2" x="128" y="602" text-anchor="middle">Overrides survive</text>
+  </g>
+  <g data-id="runtime">
+    <rect class="box" x="272" y="556" width="176" height="60"/>
+    <text class="t" x="360" y="581" text-anchor="middle">Run scene</text>
+    <text class="t2" x="360" y="602" text-anchor="middle">Appearance + behavior</text>
+  </g>
+  <g data-id="export-target">
+    <rect class="box" x="504" y="556" width="176" height="60"/>
+    <text class="t" x="592" y="581" text-anchor="middle">Target export</text>
+    <text class="t2" x="592" y="602" text-anchor="middle">When delivery is affected</text>
+  </g>
+</svg>

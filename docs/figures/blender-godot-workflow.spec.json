@@ -1,0 +1,45 @@
+{
+  "id": "blender-godot-workflow",
+  "question": "How does a Blender asset become a game-owned Godot scene without losing gameplay changes on reimport?",
+  "claim": "Keep gameplay changes in a game-owned scene, then verify that they survive asset reimport.",
+  "form": "branched artifact pipeline",
+  "comparison": {"targets": ["GLB export", "Direct .blend import"], "action": "choose one import route", "encoding": "juxtapose"},
+  "geometry": "schematic",
+  "example": null,
+  "nodes": [
+    {"id": "source", "label": "Blender source", "sub": ".blend", "role": "context"},
+    {"id": "route-choice", "label": "Choose one import route", "role": "frame"},
+    {"id": "glb", "label": "GLB export", "sub": "Blender used at export time", "role": "context"},
+    {"id": "blend", "label": "Direct .blend import", "sub": "Blender on every import host", "role": "context"},
+    {"id": "imported", "label": "Godot imported scene", "sub": "Generated resources", "role": "context"},
+    {"id": "game", "label": "Game-owned .tscn", "sub": "Gameplay and local overrides", "role": "focus"},
+    {"id": "verification-branch", "label": "", "role": "frame"},
+    {"id": "reimport", "label": "Reimport", "sub": "Overrides survive", "role": "context"},
+    {"id": "runtime", "label": "Run scene", "sub": "Appearance + behavior", "role": "context"},
+    {"id": "export-target", "label": "Target export", "sub": "When delivery is affected", "role": "context"}
+  ],
+  "edges": [
+    {"id": "export", "from": "source", "to": "glb", "relation": "data"},
+    {"id": "direct-import", "from": "source", "to": "blend", "relation": "data"},
+    {"id": "import-glb", "from": "glb", "to": "imported", "relation": "data"},
+    {"id": "import-blend", "from": "blend", "to": "imported", "relation": "data"},
+    {"id": "compose", "from": "imported", "to": "game", "relation": "data", "label": "instance or inherit"},
+    {"id": "verify", "from": "game", "to": "verification-branch", "relation": "data", "label": "verify the change"},
+    {"id": "reimport-check", "from": "verification-branch", "to": "reimport", "relation": "data"},
+    {"id": "runtime-check", "from": "verification-branch", "to": "runtime", "relation": "data"},
+    {"id": "export-check", "from": "verification-branch", "to": "export-target", "relation": "data"}
+  ],
+  "groups": [],
+  "focus": ["compose", "game"],
+  "hues": {"blue": "game-owned composition boundary"},
+  "forbidden_edges": [
+    {"from": "game", "to": "imported", "why": "Gameplay changes belong in the game-owned scene rather than generated import resources."},
+    {"from": "blend", "to": "glb", "why": "The two routes are alternatives, not sequential pipeline stages."}
+  ],
+  "canvas": ["source artifact", "alternative import routes and Blender dependency", "imported resource boundary", "game-owned composition", "reimport, runtime, and conditional export checks"],
+  "caption": {
+    "claim": "Keep gameplay changes in a game-owned scene, then verify that they survive asset reimport.",
+    "reading_key": "Blue marks the game-owned composition boundary. The top branches are alternative routes; the bottom branches are checks of the changed scene.",
+    "deferred": ["version-specific export and import options", "Blender pipeline reference sources", "materials, transforms, animation, collision, and node-name stability"]
+  }
+}
