@@ -1,260 +1,113 @@
 # Validation
 
-Use the narrowest evidence that proves the requested Godot result, then add
-higher evidence only where the claim requires it. Treat every project-facing
-Godot invocation as potentially stateful and executable.
+Choose checks that establish the requested result. Script parsing, asset import, scene behavior, appearance, and exported builds prove different things. Record the exact Godot version, command, exit status, relevant diagnostics, and artifact for each check.
 
-## Contents
+## Execution boundary
 
-- Set authority and trust boundaries
-- Identify the exact binary
-- Climb the evidence ladder
-- Import assets
-- Parse scripts
-- Build C# solutions
-- Run scenes and tests
-- Collect visual evidence
-- Verify exports
-- Report results and blocked checks
-- Official Godot 4.7 sources
+A review stays read-only unless the request authorizes execution. Inspect files and report findings without importing, generating project caches, or running project code. Binary-only `--version` and `--help` checks are suitable outside the project. For implementation work, run proportionate local checks within the existing authorization.
 
-## Set authority and trust boundaries
+Opening, importing, parsing, building, and exporting a project can load tool scripts, editor or import plugins, native extensions, or build hooks. Inspect these surfaces before executing an unfamiliar project and use an appropriate isolation boundary. Recovery mode disables several editor facilities; it is not a security sandbox. Import and editor commands normally create `.godot/` caches and may update import metadata.
 
-Classify the request before running checks:
-
-- For a review, inspect and report findings without editing files, importing
-  assets, generating caches, or running project code. Binary-only version and
-  help checks are acceptable when they do not target the project.
-- For a diagnosis, gather read-only evidence first. Do not implement a fix
-  unless the request also authorizes changes.
-- For an implementation, make in-scope local changes and run proportionate,
-  non-destructive validation against a trusted project.
-
-Treat an unfamiliar project as untrusted code. Opening the editor, importing,
-loading a project script, building, running a scene, testing, and exporting may
-activate tool scripts, editor or import plugins, native extensions, build
-hooks, or ordinary game code. Inspect `addons/`, `@tool` scripts, extension
-configuration, import plugins, and project build files before execution.
-
-Do not run project-facing commands for an untrusted project without explicit
-authorization and an appropriate isolation boundary. Recovery mode disables
-several crash-prone facilities, including tool scripts, editor plugins, and
-GDExtension addons, but it is a recovery aid, not a security sandbox.
-
-Expect import and editor commands to create or update `.godot/` caches. Treat
-that normal cache mutation as validation state, not as a source edit. Keep it
-out of a review-only workflow.
-
-## Identify the exact binary
-
-Start outside the project directory and identify the candidate executable:
+## Binary and prerequisites
 
 ```sh
 godot --version
 godot --help
 ```
 
-Use `--version` to capture the exact version string. Use `--help` to confirm
-that the current build exposes every option you plan to use. Both options exit
-early in Godot 4.7 before project startup.
+Use the project's intended engine version. The maintained reference is Godot 4.7.2; a different project version needs its matching binary and documentation. Capture the full version string instead of treating the reference version as proof of the installed engine.
 
-Never infer option support from a zero exit status alone. Godot silently ignores
-unknown command-line arguments and does not warn when an option is unavailable
-for the current build type. Confirm the option in this binary's help output and
-require the expected log, state change, or artifact from every command.
+Confirm each option in the selected binary's help output. Godot can silently ignore unsupported arguments, so exit status alone does not establish that a requested check ran. `--script` and `--check-only` need an editor or a build with path overrides enabled. Import, solution build, and export commands require an editor. C# additionally needs the .NET editor and the project's compatible SDK.
 
-Remember the availability classes:
+A fresh checkout may need an import before script parsing: imported assets and the global script-class cache can be missing. After changes to class names, assets, import settings, or referenced resources, import first. Diagnose a missing dependency or stale cache before treating its downstream parse errors as independent source defects.
 
-- `--help` and `--version` are available in editor and export-template builds.
-- `--script` and `--check-only` require an editor build or an export template
-  compiled with path overrides enabled.
-- `--import`, `--build-solutions`, and export commands require an editor build.
-
-Stop version-sensitive validation when the executable does not match the
-project's intended Godot line. Report the mismatch instead of silently testing
-with a different version.
-
-## Climb the evidence ladder
-
-Use this order and stop when the requested claim is proven:
-
-1. Inspect the diff, `project.godot`, referenced paths, and serialized structure.
-2. Parse each changed script.
-3. Import changed assets and text resources.
-4. Build the existing C# solution when applicable.
-5. Load or run the affected scene with a bounded smoke case.
-6. Run relevant existing automated tests.
-7. Observe visual behavior at the required viewport and renderer.
-8. Export with the actual preset and inspect or launch the artifact.
-
-Do not substitute a lower rung for a higher claim. Parsing does not prove
-runtime behavior, a headless run does not prove appearance, and a scene run
-does not prove export configuration.
-
-For every executed check, retain the exact command, working project path,
-version, exit status, relevant output, and produced artifact. Read stderr even
-when the exit status is zero.
-
-## Import assets
-
-Run an editor import from an explicit project directory:
+## Asset import
 
 ```sh
 godot --headless --path /absolute/path/to/project --import
 ```
 
-In Godot 4.7, `--import` starts the editor, waits for resources to import, then
-quits; it implies `--editor` and `--quit`. Use it after changes to imported
-assets, `.tscn`, `.tres`, scripts referenced by resources, import settings, or
-project-wide type registration.
+`--import` starts the editor, waits for imports, and quits. Require a clean exit and inspect all diagnostics. Import completion does not establish scene behavior or appearance. For Blender assets, check the conversion/import prerequisites and artifacts in [Blender pipeline](blender-pipeline.md) when that workflow is in use.
 
-Require a clean exit and inspect import or parse diagnostics. Remember that a
-successful import proves only that the editor completed its import pass. It
-does not prove a scene can run or looks correct.
+## GDScript parsing
 
-## Parse scripts
-
-Parse a changed GDScript without instantiating its main loop:
+Check a changed script in its project context:
 
 ```sh
 godot --headless --path /absolute/path/to/project \
   --script res://path/to/changed_script.gd --check-only
 ```
 
-Use `--check-only` only with `--script`. It loads the named script resource,
-parses it for errors, and quits. Supply a resource path relative to the project
-or an absolute filesystem path. Repeat for each independently changed entry
-script whose validity matters.
+`--check-only` loads and parses the named script without instantiating its main loop. It still loads project context and dependencies. It does not prove scene wiring, runtime behavior, or the safety of an unfamiliar project.
 
-Treat this as targeted parse evidence, not a project-wide type, scene, or
-runtime check. It can still load project context and script dependencies, so do
-not treat it as safe execution for an untrusted project.
-
-## Build C# solutions
-
-For an existing Godot C# project, use the editor build that contains the .NET
-integration:
+For all regular `.gd` files under a trusted project, invoke the bundled helper using its installed location:
 
 ```sh
-godot --headless --path /absolute/path/to/project --build-solutions
+GODOT_BIN=/absolute/path/to/godot \
+  bash /absolute/path/to/godot-best-practice/scripts/check_gdscript.sh \
+  /absolute/path/to/project
 ```
 
-`--build-solutions` implies editor mode and requires a valid project being
-edited. It invokes the registered scripting build callback and fails when the
-callback fails. Do not use it as a GDScript check, and do not claim C# build
-coverage when the required editor build or SDK is absent.
+The helper requires Bash, `find`, `mktemp`, and `grep`. `GODOT_PATH` remains a legacy fallback when `GODOT_BIN` is unset or empty. Paths with spaces are supported. It excludes directories named `.git` and `.godot`, does not follow symlinks, and includes regular scripts under addons and `.gdignore` directories. This is filesystem coverage, not a replica of the editor's import selection.
 
-Also run the repository's existing build command when it encodes additional
-project rules. Do not invent a replacement build workflow merely to produce a
-green command.
+The helper checks CLI option availability, rejects incomplete file discovery, and treats nonzero parser exits or engine error diagnostics as failures. Godot can print script errors with exit status zero. Before scanning, the helper parses an intentionally malformed temporary script outside the project and requires its expected error and exact path in the diagnostics. This rejects effective diagnostic suppression, including `application/run/disable_stderr` set through `override.cfg`, without rewriting project configuration. The temporary probe is removed on exit. Warnings remain visible but do not fail the helper. It does not import automatically, enforce an engine version, impose a wall-clock timeout, or check C#, scenes, shaders, and exports. Use a bounded external runner when project startup or native code might hang.
 
-## Run scenes and tests
+| Exit | Meaning |
+| --- | --- |
+| `0` with `Checked: N`, `Failed: 0` | All discovered scripts passed the parser check |
+| `0` with `SKIP` | No regular `.gd` files; no engine check ran |
+| `1` | At least one script or engine diagnostic failed |
+| `2` | Invalid input, incomplete discovery, unavailable CLI option, or unavailable parser diagnostics |
+| `127` | Configured engine missing or not executable |
+| Any version/help failure | Original nonzero exit preserved; diagnostics identify the preflight stage |
 
-Run a specific scene explicitly for a non-visual smoke check:
+An empty GDScript scan is valid for a C# project but supplies no C# build evidence. A passing scan also supplies no runtime or visual evidence.
+
+## C# build
+
+```sh
+godot --headless --path /absolute/path/to/project --build-solutions --quit
+```
+
+Use the .NET editor, confirm that the existing solution actually built, and inspect build diagnostics. `--build-solutions` implies editor mode; `--quit` bounds editor lifetime after the build callback. Also run the repository's existing build command when it encodes additional requirements. A standard editor with no C# build callback supplies no C# evidence.
+
+## Runtime and existing tests
 
 ```sh
 godot --headless --path /absolute/path/to/project \
   --scene res://scenes/target.tscn --quit-after 2
 ```
 
-`--scene` accepts a project scene path or UID. A scene may also be supplied as
-a positional argument from the project directory. Treat `--quit-after` as a
-number of engine iterations, not seconds. Prefer a scene or smoke script that
-exits deterministically; do not leave an open-ended process running.
+`--quit-after` counts engine iterations, not seconds. This command provides a short startup smoke check; it does not establish gameplay that was never exercised. Prefer a focused scene or script with observable assertions and deterministic exit for behavioral claims. Inspect stderr even when the process returns zero.
 
-Scene execution runs project code. Assert the behavior under test through
-exit status, explicit diagnostics, or deterministic state. Mere startup without
-an error is insufficient for gameplay logic that never ran.
+Run the relevant tests already configured by the project. Discover the command from repository documentation, addons, or CI. Do not install a framework solely to obtain a passing check. Where no framework exists, use a focused smoke scenario for the changed behavior.
 
-Use a test framework only when the project already includes and configures it.
-Discover the project's test command from its repository, addons, and continuous
-integration configuration. Run the smallest relevant existing test set first.
-Do not install or scaffold a framework solely to validate a change. When none
-exists, use a focused smoke scene or script and report the missing framework.
-
-## Collect visual evidence
-
-Run without `--headless` when the result depends on UI layout, 2D or 3D
-composition, camera framing, animation timing, particles, materials, lighting,
-or renderer-specific behavior:
+## Visual evidence
 
 ```sh
 godot --path /absolute/path/to/project --scene res://scenes/target.tscn
 ```
 
-Exercise the state that changed, not only the initial frame. Record the scene,
-viewport size, renderer, interaction state, and a screenshot or short recording.
-Compare against explicit acceptance criteria or a known baseline.
+Exercise the changed state at the required viewport and renderer. Record the scene, viewport, interaction, and screenshot or recording. UI layout, camera framing, animation timing, materials, lighting, and renderer-specific behavior need visual evidence. A headless run does not establish their appearance. If the display, GPU, input, or capture route is unavailable, state which visual claim remains blocked.
 
-If a display, GPU, input path, or capture route is unavailable, mark visual
-validation blocked. Do not present text inspection or a headless exit as visual
-evidence.
+## Export evidence
 
-## Verify exports
-
-Check all prerequisites before exporting:
-
-- Use a Godot editor binary, not an export template.
-- Match the preset name exactly to `export_presets.cfg`.
-- Install matching export templates or configure a valid custom template.
-- Install any platform SDK or signing dependency required by the preset.
-- Create the target directory before running the command.
-- Include the output filename where the platform requires one.
-
-Run the relevant preset:
+Use an exact preset from `export_presets.cfg`, matching export templates, and the platform SDK or signing dependencies it requires. Create the output directory first:
 
 ```sh
 godot --headless --path /absolute/path/to/project \
   --export-release "Preset Name" build/game.exe
 ```
 
-Resolve a relative export path from the directory containing `project.godot`,
-not from the shell's current directory. The same rule applies to
-`--export-debug` and `--export-pack`. In Godot 4.7, debug and pack exports imply
-an import pass.
+Relative output paths resolve from the directory containing `project.godot`, not the shell directory. Debug and pack exports imply an import pass. Require a clean exit and the expected artifact, then inspect or launch it when the claim includes packaging or runtime behavior. Keep `.godot/export_credentials.cfg` and signing secrets out of shared logs.
 
-Require a clean exit and the expected artifact at the resolved path. Check its
-type and size, then launch or inspect it when the requested claim includes
-packaging or runtime behavior. Keep credentials from
-`.godot/export_credentials.cfg` private and out of reported logs.
+## Result reporting
 
-## Report results and blocked checks
+Report each relevant check as passed, failed, blocked, not run, or inconclusive. Name the observed result and its limit. For a blocked claim, give the missing prerequisite and smallest next action; do not retry an unchanged command when the prerequisite is still absent. Finish with changed files, exact engine version, checks actually run, and remaining runtime, visual, or export gaps.
 
-Label each check as one of:
+## Official sources
 
-- **Passed:** the expected observable result occurred.
-- **Failed:** the command ran and produced a relevant error or wrong result.
-- **Blocked:** a prerequisite, authority boundary, trust boundary, or required
-  environment was unavailable.
-- **Not run:** the check was irrelevant or outside the requested scope.
-- **Inconclusive:** the command ran but did not prove the claim.
-
-For every blocked or inconclusive check, report:
-
-1. The exact check not proven.
-2. The concrete reason.
-3. The strongest evidence obtained instead.
-4. The impact on the completion claim.
-5. The smallest next action that would unblock it.
-
-Do not retry unchanged commands after the same missing prerequisite is clear.
-Do not replace a required version, renderer, platform, preset, or visual state
-without identifying the substitution and its reduced evidentiary value.
-
-Finish with the Godot version, commands run, passed evidence, visual and export
-evidence, failed checks, blocked checks, and files changed. Claim only what the
-recorded evidence supports.
-
-## Official Godot 4.7 sources
-
-Recheck these files within `godotengine/godot-docs` when updating
-version-sensitive rules:
-
-- `tutorials/editor/command_line_tutorial.rst`
-- `tutorials/editor/project_manager.rst`
-- `tutorials/plugins/running_code_in_the_editor.rst`
-- `tutorials/plugins/editor/import_plugins.rst`
-- `tutorials/export/exporting_projects.rst`
-
-Recheck `main/main.cpp` within `godotengine/godot` for CLI implementation
-details.
+- [Godot 4.7 command-line reference](https://docs.godotengine.org/en/4.7/tutorials/editor/command_line_tutorial.html): option availability and command semantics.
+- [Godot 4.7.2 CLI implementation](https://github.com/godotengine/godot/blob/4.7.2-stable/main/main.cpp): check-only startup and build callback behavior.
+- [Running code in the editor](https://docs.godotengine.org/en/4.7/tutorials/plugins/running_code_in_the_editor.html): tool-script execution.
+- [Exporting projects](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_projects.html): export prerequisites.
