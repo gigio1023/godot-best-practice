@@ -1,0 +1,15 @@
+{
+  "errors": 0,
+  "warnings": 0,
+  "metrics": {
+    "width_u": 720,
+    "height_u": 640,
+    "delivery_css_px": 704,
+    "height_css_px": 625.8,
+    "texts": 19,
+    "lines": 9,
+    "color_area": 0.003
+  },
+  "findings": [],
+  "source": "blender-godot-workflow.svg"
+}
