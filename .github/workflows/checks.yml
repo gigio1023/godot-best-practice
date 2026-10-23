@@ -1,0 +1,27 @@
+name: Package checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checker:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell syntax
+        run: |
+          bash -n skills/godot-best-practice/scripts/check_gdscript.sh
+          bash -n evals/checker-smoke.sh
+      - name: Exercise checker contracts with controlled CLI adapter
+        run: bash evals/checker-smoke.sh
+      - name: Validate frozen case JSON and whitespace
+        run: |
+          python3 -m json.tool evals/cases.json > /dev/null
+          git diff --check

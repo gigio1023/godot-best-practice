@@ -1,12 +1,8 @@
 # Cross-Harness Evaluation
 
-This evaluation freezes the same Godot fixture, prompts, and success rubric
-across harnesses. The 2026-07-10 run targeted Codex with GPT-5.6 Sol and Claude
-Code with Claude Fable 5; future runs target GPT-6 Sol in Codex 0.156.1 or later
-and Claude Fable 5.1 in Claude Code.
+The [2026-07-10 behavior evaluation](results.md) freezes the Godot fixture, prompts, and success rubric in `cases.json`. It targeted Codex with GPT-5.6 Sol and Claude Code with Claude Fable 5. Its results apply to the recorded payload hashes, not automatically to the current skill.
 
-See [the latest recorded results](results.md) for completed cells and explicit
-environment limitations.
+[Deterministic validation on 2026-10-23](validation-2026-10-23.md) records the refreshed checker and real Godot 4.7.2 smoke checks. No new model behavior matrix ran. Future behavior evaluations must record their actual model, harness, effort, engine, and payload revisions and preserve the historical cases.
 
 ## Matrix
 
@@ -50,14 +46,17 @@ Score observable artifacts and evidence, never private reasoning.
 
 ## Structural checks
 
-Safe checks include frontmatter validation, direct-reference existence, script
-syntax/smoke tests, JSON parsing, and an isolated `skills add --list` or install
-into a temporary HOME/project.
+Package checks include frontmatter validation, direct-reference existence, shell syntax, JSON parsing, and isolated skill discovery or installation. Run the checker contract cases without installing an engine:
 
-Do **not** use `skills check` as a lint command. In Skills CLI 1.5.15 through
-1.7.0 it is a hidden alias for `skills update` and can rewrite installed user
-skills. Skills CLI 1.5.15 ran that update even when passed `--help`; in 1.7.0 a
-subcommand `--help` prints help before dispatch.
+```sh
+bash evals/checker-smoke.sh
+```
+
+This uses a controlled CLI adapter and a temporary fixture copy. A passing result proves checker behavior only. The GitHub workflow runs the same cases on Linux and macOS. Use the separate real-engine commands in the [current validation record](validation-2026-10-23.md) for engine evidence.
+
+Do **not** use `skills check` as a lint command. In Skills CLI 1.7.4, it remains an alias for `skills update` and can rewrite installed skills. The [pinned command dispatcher](https://github.com/vercel-labs/skills/blob/a80e4c9d12d607631249d4d7d059f835d4b2f13a/src/cli.ts#L420-L424) sends both commands to `runUpdate`; a subcommand `--help` [returns before dispatch](https://github.com/vercel-labs/skills/blob/a80e4c9d12d607631249d4d7d059f835d4b2f13a/src/cli.ts#L338-L356).
+
+Historical caution: Skills CLI 1.5.15 also ran that update when passed `--help`. The help short-circuit was already present in the previously inspected 1.7.0 release. Do not infer an older CLI's behavior from the current one.
 
 ## Acceptance
 
