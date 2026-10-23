@@ -23,6 +23,15 @@ case "${1:-}" in
 		exit 0 ;;
 esac
 case "$*" in *res://.godot/*) exit 9 ;; esac
+for arg in "$@"; do
+	case "$arg" in
+		*/diagnostic-probe.gd)
+			if [ "${SMOKE_MODE:-}" != silent-errors ]; then
+				printf 'SCRIPT ERROR: Parse Error: intentional probe failure at %s\n' "$arg"
+			fi
+			exit 0 ;;
+	esac
+done
 case "${SMOKE_MODE:-}" in
 	error-zero) printf 'ERROR: intentional resource failure\n'; exit 0 ;;
 	parse-failure) printf 'Parse Error: intentional failure\n'; exit 17 ;;
@@ -56,6 +65,7 @@ expect_exit 'missing binary' 127 env GODOT_BIN="$scratch/missing" bash "$checker
 expect_exit 'version failure status' 42 env GODOT_BIN="$repo/evals/fixture/eval-input/failing-godot.sh" bash "$checker" "$project"
 expect_exit 'help failure status' 42 env GODOT_BIN="$scratch/engine" SMOKE_MODE=help-failure bash "$checker" "$project"
 expect_exit 'unsupported options' 2 env GODOT_BIN="$repo/evals/fixture/eval-input/fake-godot-ok.sh" bash "$checker" "$project"
+expect_exit 'suppressed parser diagnostics' 2 env GODOT_BIN="$scratch/engine" SMOKE_MODE=silent-errors bash "$checker" "$project"
 expect_exit 'zero-exit engine error' 1 env GODOT_BIN="$scratch/engine" SMOKE_MODE=error-zero bash "$checker" "$project"
 expect_exit 'nonzero parser error' 1 env GODOT_BIN="$scratch/engine" SMOKE_MODE=parse-failure bash "$checker" "$project"
 

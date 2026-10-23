@@ -1,6 +1,6 @@
 # Deterministic validation, 2026-10-23
 
-The refreshed checker passed 13 controlled CLI cases and real Godot 4.7.2 fixture checks. These results establish helper behavior and a small engine smoke scenario. No new model or cross-harness behavior evaluation ran; the [2026-07-10 evaluation](results.md) remains historical evidence for its recorded payloads.
+The refreshed checker passed 14 controlled CLI cases and real Godot 4.7.2 fixture checks. These results establish helper behavior and a small engine smoke scenario. No new model or cross-harness behavior evaluation ran; the [2026-07-10 evaluation](results.md) remains historical evidence for its recorded payloads.
 
 ## Checker contract cases
 
@@ -26,13 +26,14 @@ The smoke runner copies the frozen fixture into a temporary directory and uses a
 | Binary version failure | 42 |
 | Binary help failure | 42 |
 | Missing CLI capability | 2 |
+| Suppressed parser diagnostics | 2 |
 | Engine error with exit zero | 1 |
 | Nonzero parser error | 1 |
 | Partial file discovery failure | 2 |
 
 Before the fix, extra arguments were ignored and failed file discovery returned `Checked: 0`, `Failed: 0`, exit 0. An empty project returned the same apparent success. It now reports an explicit skip, so a C# project does not fail merely because it has no GDScript.
 
-The GitHub workflow runs these deterministic cases on Linux and macOS. The local run used macOS and Bash 3.2. CI execution is separate from the local result recorded here.
+The GitHub workflow runs these deterministic cases on Linux and macOS with `actions/checkout` pinned to [v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1). Its Node 24 runtime requires Actions Runner 2.327.1 or later; the workflow uses GitHub-hosted current runners. The local run used macOS and Bash 3.2. CI execution is separate from the local result recorded here.
 
 ## Real engine checks
 
@@ -69,5 +70,27 @@ GODOT_BIN="$GODOT_BIN" bash skills/godot-best-practice/scripts/check_gdscript.sh
 ```
 
 The underlying Godot process returned exit 0 and printed `SCRIPT ERROR: Parse Error` and `ERROR: Failed to load script`. The helper returned exit 1 with `Checked: 3`, `Failed: 1`. This confirms why checking diagnostics is necessary even when the process exits successfully. Remove the temporary project after inspecting the results.
+
+## Suppressed diagnostic regression
+
+Independent review reproduced another false success: a malformed script returned engine exit 0 without diagnostics when the project set `application/run/disable_stderr=true`. The setting also took effect from `override.cfg`. The checker now parses a deliberately malformed temporary script in the same project context before scanning and requires the expected parse error plus the exact temporary script path. It returns exit 2 when diagnostics cannot be established. No project configuration is rewritten.
+
+After the invalid-script check above, reproduce the override case on the temporary project:
+
+```sh
+printf '[application]\nrun/disable_stderr=true\n' > "$scratch/project/override.cfg"
+GODOT_BIN="$GODOT_BIN" bash skills/godot-best-practice/scripts/check_gdscript.sh "$scratch/project"
+```
+
+Observed results after the fix:
+
+| Real engine case | Checker result |
+| --- | --- |
+| Valid fixture in a directory containing spaces | Exit 0; three scripts passed |
+| Malformed script, diagnostics enabled | Exit 1; one of three scripts failed |
+| Malformed script, `project.godot` suppresses stderr | Exit 2; parser diagnostics unavailable |
+| Malformed script, `override.cfg` suppresses stderr | Exit 2; parser diagnostics unavailable |
+
+An independent reviewer reran all four real-engine cases and all 14 controlled cases after the fix. The probe confirms observability; it is not a sandbox or a gameplay test.
 
 The frozen fixture, prompts, rubric, and historical evaluation results were not changed. No fresh model quality, trigger discovery, or cross-harness acceptance claim follows from these checks.

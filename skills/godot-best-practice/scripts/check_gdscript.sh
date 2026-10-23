@@ -35,6 +35,7 @@ fi
 
 # Materialize discovery so a partial/failed find cannot become a passing scan.
 scratch=$(mktemp -d "${TMPDIR:-/tmp}/check-gdscript.XXXXXXXX") || exit 2
+scratch=$(cd -- "$scratch" && pwd -P) || exit 2
 trap 'rm -rf -- "$scratch"' EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
@@ -84,6 +85,25 @@ done
 
 printf 'Godot: %s\n' "$godot_version"
 printf 'Project: %s\n' "$project_dir"
+
+# Effective project overrides can silence parse errors while Godot still exits 0.
+# Check that this project context exposes a known error, without editing it.
+probe_file="$scratch/diagnostic-probe.gd"
+printf 'extends RefCounted\nfunc broken(\n' > "$probe_file"
+if probe_output=$("$godot_bin" --headless --path "$project_dir" --script "$probe_file" --check-only 2>&1); then
+	probe_status=0
+else
+	probe_status=$?
+fi
+if [ "$probe_status" -gt 1 ] ||
+	! printf '%s\n' "$probe_output" | grep -Fq 'Parse Error' ||
+	! printf '%s\n' "$probe_output" | grep -Fq -- "$probe_file"; then
+	printf 'FAIL: parser diagnostics unavailable (probe exit %d).\n' "$probe_status" >&2
+	printf '%s\n' 'Check application/run/disable_stderr and project settings overrides.' >&2
+	printf '%s\n' "$probe_output" >&2
+	exit 2
+fi
+
 checked=0
 failed=0
 

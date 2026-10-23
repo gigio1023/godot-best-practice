@@ -50,14 +50,14 @@ GODOT_BIN=/absolute/path/to/godot \
 
 The helper requires Bash, `find`, `mktemp`, and `grep`. `GODOT_PATH` remains a legacy fallback when `GODOT_BIN` is unset or empty. Paths with spaces are supported. It excludes directories named `.git` and `.godot`, does not follow symlinks, and includes regular scripts under addons and `.gdignore` directories. This is filesystem coverage, not a replica of the editor's import selection.
 
-The helper checks CLI option availability, rejects incomplete file discovery, and treats nonzero parser exits or engine error diagnostics as failures. Godot can print script errors with exit status zero. Warnings remain visible but do not fail the helper. It does not import automatically, enforce an engine version, impose a wall-clock timeout, or check C#, scenes, shaders, and exports. Use a bounded external runner when project startup or native code might hang.
+The helper checks CLI option availability, rejects incomplete file discovery, and treats nonzero parser exits or engine error diagnostics as failures. Godot can print script errors with exit status zero. Before scanning, the helper parses an intentionally malformed temporary script outside the project and requires its expected error and exact path in the diagnostics. This rejects effective diagnostic suppression, including `application/run/disable_stderr` set through `override.cfg`, without rewriting project configuration. The temporary probe is removed on exit. Warnings remain visible but do not fail the helper. It does not import automatically, enforce an engine version, impose a wall-clock timeout, or check C#, scenes, shaders, and exports. Use a bounded external runner when project startup or native code might hang.
 
 | Exit | Meaning |
 | --- | --- |
 | `0` with `Checked: N`, `Failed: 0` | All discovered scripts passed the parser check |
 | `0` with `SKIP` | No regular `.gd` files; no engine check ran |
 | `1` | At least one script or engine diagnostic failed |
-| `2` | Invalid input, incomplete discovery, or unavailable CLI option |
+| `2` | Invalid input, incomplete discovery, unavailable CLI option, or unavailable parser diagnostics |
 | `127` | Configured engine missing or not executable |
 | Any version/help failure | Original nonzero exit preserved; diagnostics identify the preflight stage |
 
