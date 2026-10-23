@@ -78,9 +78,10 @@ Use named Input Map actions for gameplay. For 4.7 migrations, replace device-ID
 
 ## Assets And Imports
 
+For Blender-authored 3D assets, use [Blender asset pipeline](blender-pipeline.md) to choose explicit glTF export or direct `.blend` conversion, preserve rig transforms, and separate imported visuals from game-owned scenes. A direct `.blend` route adds Blender to every import machine, including CI.
+
 - Keep `.godot/` as generated cache and out of version control.
-- Commit source assets and their adjacent `<asset>.import` metadata when the
-  project tracks those settings.
+- Commit source assets and their adjacent `<asset>.import` metadata so clean imports preserve the project's settings.
 - Access imported resources through `ResourceLoader`/`load`, not `FileAccess`;
   exported projects may not include the original source file at `res://`.
 - Change import settings, post-import scripts, or intentional overrides instead

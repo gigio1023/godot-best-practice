@@ -1,0 +1,20 @@
+Blender 5.2.3 LTS
+Blender 5.2.3 LTS (hash e13b728c6880 built 2026-10-22 01:31:22)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WRAPPER metadata=game child=GameOwnedMarker position=(4.0, 5.0, 6.0)
+GLB SAMPLER first=0.04166666666667 last=1.04166666666667
+MESH stage=initial size=(2.0, 2.0, 2.0) position=(0.0, 1.0, 0.0)
+CLIP length=1.04166662693024 tracks=1 first=0.0 last=1.04166662693024
+ENDPOINT position=(2.0, 1.0, 0.0)
+PASS stage=initial geometry, axis, animation, wrapper
+Blender 5.2.3 LTS (hash e13b728c6880 built 2026-10-22 01:31:22)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WRAPPER metadata=game child=GameOwnedMarker position=(4.0, 5.0, 6.0)
+GLB SAMPLER first=0.04166666666667 last=1.04166666666667
+MESH stage=reimport size=(3.0, 2.0, 2.0) position=(0.0, 1.0, 0.0)
+CLIP length=1.04166662693024 tracks=1 first=0.0 last=1.04166662693024
+ENDPOINT position=(3.0, 1.0, 0.0)
+PASS stage=reimport geometry, axis, animation, wrapper
+PASS: initial import and changed-source reimport; wrapper file unchanged
