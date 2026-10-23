@@ -1,116 +1,52 @@
-# GDScript And Godot C#
-
-Use this reference when editing scripts, signals, lifecycle code, node
-references, typed APIs, or .NET projects. Follow the project's language and
-style before introducing a new default.
-
-## Contents
-
-- GDScript
-- Node references and signals
-- Resources and runtime state
-- Godot C#
-- Godot 4.7 migration checks
-- Official reading map
+# GDScript and Godot C#
 
 ## GDScript
 
-- Use the syntax and APIs of the detected project version. Reject Godot 3-era
-  forms such as `yield(...)` or old export syntax in a Godot 4 project.
-- Preserve the repository's indentation and typing policy. Prefer explicit
-  types for exported/public boundaries, signals, return values, and locals where
-  inference is unclear; do not create noisy annotations that fight local style.
-- Use `@export` for designer-provided values or dependencies, `@onready` for
-  stable scene-owned children, and `await` for signal/coroutine suspension.
-- Keep `_ready`, `_process`, `_physics_process`, and input callbacks focused.
-  Move reusable decisions into named methods and keep physics mutations in the
-  physics step unless the design requires otherwise.
-- Verify typed arrays/dictionaries, annotations, warnings, and method signatures
-  against the project's minor version. A valid current example may not parse in
-  an older Godot 4 project.
+Use the detected engine version and repository style. Godot 4 uses `@export`, `@onready`, and `await`; Godot 3 syntax such as `yield(...)` is not interchangeable.
 
-Do not run every script as a command-line program. Godot's normal `--script`
-execution requires a `SceneTree` or `MainLoop` script. `--check-only` returns
-after parsing and can validate an attached Node/Resource script; use the bundled
-checker or an equivalent targeted command.
+- Type public/exported boundaries, signals, return values, and ambiguous values. Preserve the project's typing and indentation policy.
+- Use `@export` for designer-provided values and dependencies, and `@onready` for stable scene-owned children.
+- Keep lifecycle and input callbacks focused. Put collision-aware movement in `_physics_process` and presentation updates in `_process` when their timing requires it.
+- Check typed containers, annotations, warnings, and method signatures against the project's minor version. A current example may not parse in an older Godot 4 project.
+- After `await`, account for changed scene or object lifetime before using captured nodes. A continuation can outlive the gameplay state that started it.
 
-## Node References And Signals
+Normal `--script` execution needs a `SceneTree` or `MainLoop` entry point. `--check-only` parses without instantiating that entry point and can check attached Node/Resource scripts. See [validation](validation.md) for the checker and its limits.
 
-Choose the narrowest stable dependency:
+## Dependencies and signals
 
-- Use an exported Node/Resource reference when a scene author should wire it.
-- Use `$Child` or `@onready` for a stable child owned by the same scene.
-- Use `%UniqueName` only inside the scene ownership boundary that guarantees the
-  unique name.
-- Pass required dependencies during composition when a script should not search
-  the tree.
-- Use signals across ownership boundaries when the sender should not know its
-  listeners. Connect them at the scene or coordinator that owns both sides.
-- Use groups for many objects sharing a role such as `damageable` or `saveable`,
-  not to hide one required singleton-like dependency.
+| Dependency | Prefer |
+| --- | --- |
+| Designer-wired node or data | Exported Node/Resource reference |
+| Stable child in the same scene | `$Child` or `@onready` reference |
+| Named node within its scene ownership boundary | `%UniqueName` |
+| Required external collaborator | Reference passed during composition |
+| Event whose sender should not know its listeners | Signal connected by their common owner |
+| Changing set of objects with one role | Group |
 
-Avoid absolute `/root/...` paths and long cross-scene `get_node()` chains. When
-renaming a node or signal, search scripts, scenes, animation tracks, exported
-NodePaths, and tests for every serialized consumer.
+Avoid long cross-scene `get_node()` chains and absolute `/root/...` paths when a local owner can wire the dependency. A rename must cover serialized consumers too: scene connections, animation tracks, exported NodePaths, scripts, and existing tests.
 
-## Resources And Runtime State
+## Resources
 
-Treat resources as shared data containers. Loading the same path returns the
-same in-memory resource. Do not store mutable per-instance state in a shared
-resource unless sharing is intentional; duplicate it or use scene-local state
-according to the project's design.
+Keep immutable definitions shared and per-instance state private. Normal cached loads of the same path return the same resource while it is retained. Choose duplication depth or scene-local resources before mutation; [scenes and resources](scenes-and-resources.md#resource-sharing) owns the details.
 
-Use `preload()` only with a constant path and when compile-time loading fits the
-dependency. Use `load()` or `ResourceLoader` for runtime paths and imported
-resources. Do not read an imported asset through `FileAccess`; exported projects
-may contain only the imported resource representation.
+`preload()` needs a constant path and loads during script parsing. Use `load()` or `ResourceLoader` for runtime paths. Imported assets must load through the resource system; direct `FileAccess` to their source representation can fail after export.
 
 ## Godot C#
 
-- Confirm the project uses the .NET-enabled Godot editor and has the required
-  .NET SDK. The standard editor does not provide C# support.
-- Preserve `.csproj` and `.sln` files. Ignore generated `.godot/mono` state.
-- Declare Godot script classes `partial`, keep the attached class name aligned
-  with its file name, use Godot's PascalCase API, and use `[Export]` for
-  inspector-exposed members.
-- Use generated signal events and Godot collection/Variant conversions according
-  to the official C# docs; do not transliterate GDScript syntax mechanically.
-- Build through the project's established .NET workflow or Godot's
-  `--build-solutions` editor flag. A GDScript parse check does not validate C#.
-- Verify current platform support before promising an export. In the Godot 4.7
-  docs, C# web export is unavailable and Android/iOS support is experimental.
-  Treat those statements as versioned, not permanent.
+Use the .NET-enabled Godot editor and the project's required .NET SDK. Preserve `.csproj` and `.sln`; `.godot/mono` is generated state.
 
-Do not install an SDK, .NET editor, NuGet package, or testing framework without
-the user's authority.
+Declare Godot script classes `partial`, align an attached class with its filename, use Godot's PascalCase API and `[Export]`, and follow the C# docs for signal events, collections, and Variant conversion. GDScript syntax is not a C# template.
 
-## Godot 4.7 Migration Checks
+Build with the project's .NET workflow or the editor's `--build-solutions` flag. A GDScript parse check, successful file write, or empty editor log cannot prove C# compilation. Godot AI v4.3.0 edits C# as text and does not compile it; inspect actual build output.
 
-When moving from 4.6 to 4.7, inspect at least these affected script surfaces:
+The [4.7 C# platform guide](https://docs.godotengine.org/en/4.7/tutorials/scripting/c_sharp/index.html#c-platform-support) describes Android/iOS support as experimental and web export as unavailable. Recheck the target version before promising a platform.
 
-- overrides of methods with typed returns now inherit the return type and need
-  an explicit return path;
-- packed-array element assignment no longer calls the setter for the whole
-  property;
-- mouse and keyboard input should use `InputEvent.DEVICE_ID_MOUSE` and
-  `InputEvent.DEVICE_ID_KEYBOARD` instead of assuming device ID `0`;
-- several APIs changed source or binary compatibility, especially C# enum/type
-  moves and editor/import APIs.
+## Godot 4.7 migration
 
-Read the complete versioned migration guide and exact class pages for the code
-being changed. Do not turn this shortlist into a blanket rewrite.
+Check typed-return overrides, packed-array property setters, and mouse/keyboard device IDs when upgrading from 4.6. Use `InputEvent.DEVICE_ID_MOUSE` and `InputEvent.DEVICE_ID_KEYBOARD` where relevant. The [4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) also lists source and binary compatibility changes, including C# and editor/import APIs; apply the changes relevant to the project.
 
-## Official Reading Map
+## Official references
 
-- `tutorials/scripting/gdscript/gdscript_basics.rst`
-- `tutorials/scripting/gdscript/static_typing.rst`
-- `tutorials/scripting/gdscript/gdscript_styleguide.rst`
-- `tutorials/scripting/gdscript/gdscript_exports.rst`
-- `tutorials/scripting/nodes_and_scene_instances.rst`
-- `getting_started/step_by_step/signals.rst`
-- `tutorials/scripting/resources.rst`
-- `tutorials/scripting/c_sharp/index.rst`
-- `tutorials/scripting/c_sharp/c_sharp_basics.rst`
-- `tutorials/scripting/c_sharp/c_sharp_differences.rst`
-- `tutorials/scripting/c_sharp/c_sharp_exports.rst`
-- `tutorials/scripting/c_sharp/c_sharp_signals.rst`
+- [GDScript basics](https://docs.godotengine.org/en/4.7/tutorials/scripting/gdscript/gdscript_basics.html), [static typing](https://docs.godotengine.org/en/4.7/tutorials/scripting/gdscript/static_typing.html), [style](https://docs.godotengine.org/en/4.7/tutorials/scripting/gdscript/gdscript_styleguide.html), [exports](https://docs.godotengine.org/en/4.7/tutorials/scripting/gdscript/gdscript_exports.html).
+- [Node references](https://docs.godotengine.org/en/4.7/tutorials/scripting/nodes_and_scene_instances.html), [signals](https://docs.godotengine.org/en/4.7/getting_started/step_by_step/signals.html), [resources](https://docs.godotengine.org/en/4.7/tutorials/scripting/resources.html).
+- [C# basics](https://docs.godotengine.org/en/4.7/tutorials/scripting/c_sharp/c_sharp_basics.html), [API differences](https://docs.godotengine.org/en/4.7/tutorials/scripting/c_sharp/c_sharp_differences.html), [signals](https://docs.godotengine.org/en/4.7/tutorials/scripting/c_sharp/c_sharp_signals.html).

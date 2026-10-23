@@ -1,4 +1,4 @@
 interface:
   display_name: "Godot Best Practice"
-  short_description: "Build and verify Godot projects with engine evidence"
-  default_prompt: "Use $godot-best-practice to make this Godot change against the actual project version and verify it at the narrowest meaningful engine layer."
+  short_description: "Build and verify Godot projects and asset pipelines"
+  default_prompt: "Use $godot-best-practice to complete this Godot task against the project's engine version and verify the changed behavior or artifact."

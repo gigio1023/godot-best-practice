@@ -1,115 +1,45 @@
-# Godot Architecture And Ownership
+# Architecture and Ownership
 
-Use this reference when designing or refactoring scene boundaries, gameplay
-systems, dependencies, shared data, or global state.
+Choose boundaries from lifetime, composition, and data sharing. A level can connect its player and HUD because it owns both; the player need not search `/root/Main/HUD`.
 
-## Contents
+## Godot primitives
 
-- Assign each concern to a Godot primitive
-- Design from ownership and lifetime
-- Compose scenes and scripts
-- Connect systems without hidden coupling
-- Keep processing and input explicit
-- Generate content without losing authorship
+| Primitive | Responsibility |
+| --- | --- |
+| Scene | Reusable composition, editable hierarchy, local subsystem |
+| Node | Runtime lifecycle and scene-tree behavior |
+| Script | Rules, orchestration, editor/runtime tools |
+| Resource | Reusable typed data and asset configuration |
+| Signal | Event notification without coupling the sender to listeners |
+| Group | Role tags and many-object discovery |
+| Autoload | State or services that must survive scene changes |
+| Project setting/input action | Engine configuration and named input intent |
 
-## Assign Each Concern To A Godot Primitive
+A script or custom type is enough when a node hierarchy adds no useful composition. A scene fits actors, panels, level chunks, effects, and coordinators that benefit from instancing and editor authoring. Keep the repository's existing layout unless restructuring is part of the task.
 
-| Primitive | Use it for | Avoid using it as |
-| --- | --- | --- |
-| Scene | Reusable composition, editable hierarchy, ownership, local subsystem boundary | A dump of unrelated global systems |
-| Node | Runtime lifecycle and scene-tree behavior | A container for every piece of data |
-| Script | Behavior, orchestration, editor/runtime tools | A hand-built replacement for large declarative scenes |
-| Resource | Reusable typed data and asset-like configuration | Unintentional shared mutable instance state |
-| Signal | Event notification where the sender should not know listeners | A global event bus by default |
-| Group | Broad role tags and many-object discovery | A hidden lookup for one required dependency |
-| Autoload | Truly cross-scene lifetime, persistent session state, broad service | The default home for every manager |
-| Project setting/input action | Engine-wide configuration and named input intent | Per-instance gameplay state |
+## Ownership decisions
 
-## Design From Ownership And Lifetime
+Resolve who creates and frees the object, which scene composes its dependencies, whether data belongs to one instance or the session, and whether a designer must wire it. Check that renaming, reparenting, instancing, or inheritance will preserve the relationship.
 
-Ask in order:
+- Connect signals where both endpoints are known. Handle lifecycle-sensitive subscriptions deliberately.
+- Use exported references for required designer-wired dependencies and resources for shared definitions.
+- Keep scene-unique names inside the scene that owns them.
+- Use groups for a changing set of roles, not a hidden lookup for one required object.
+- Add an autoload only when cross-scene continuity is required. Local coordinators, static helpers, shared resources, and ordinary nodes often suffice.
+- Persist explicit save data rather than arbitrary live nodes.
 
-1. Who creates and frees this object?
-2. Which scene owns both sides of the relationship?
-3. Does the data belong to one runtime instance, many instances, or the whole
-   session?
-4. Must a designer edit the relationship in the inspector?
-5. Will a rename, reparent, instanced scene, or inherited scene break the link?
+## Processing and input
 
-Keep dependencies inside the smallest owner that can compose them. A level scene
-can connect its player and HUD; the player should not search `/root/Main/HUD`.
-Promote a service to an autoload only when its lifetime and access are genuinely
-broader than a scene.
+Keep simulation state independent of UI presentation. Use `_physics_process` for collision-aware movement, `_process` for frame-dependent presentation, events for discrete input, and polling for continuous state. Gameplay should use named Input Map actions; raw key codes fit remapping and tool code.
 
-## Compose Scenes And Scripts
+Check process modes, pause behavior, tree order, deferred calls, and signal timing where they affect correctness. Source-file order does not establish callback order.
 
-Use scenes for reusable concepts with meaningful node hierarchies: actors,
-interactables, UI panels, level chunks, effects, and local system coordinators.
-Use scripts for rules, state transitions, input, movement, AI decisions, and
-generation/validation tools.
+## Generated content
 
-Prefer a scene when editor composition, instancing, serialization, or engine-side
-batch construction matters. Prefer a script or named custom type when the value
-is primarily behavior and a node hierarchy would be ceremony.
+Use an explicit pipeline: authored data or Resource, then generator/editor tool, then generated scene/resource. Give inputs semantic identifiers and relationships, mark generated output, and preserve a reproducible route from source to artifact. Put manual intent into source or separate authored extensions before regeneration.
 
-Follow the existing project layout. Do not reorganize a working repository into
-`scenes/`, `scripts/`, and `resources/` merely because that split is common.
+Load generated output through Godot and check required nodes, owners, paths, groups, and resources. Spatial results also need visual or runtime evidence. [Scenes and resources](scenes-and-resources.md) covers serialization, imports, and shared-resource behavior.
 
-## Connect Systems Without Hidden Coupling
+## Official references
 
-- Connect a signal where the receiver and emitter are both known. Disconnect or
-  bind lifecycle-sensitive connections deliberately.
-- Use exported references for required designer-wired dependencies and typed
-  resources for reusable configuration.
-- Use scene-unique names only within their owning scene.
-- Use groups when a system intentionally operates over a changing set of roles.
-- Prefer small local coordinators over a global event bus or service locator.
-- Keep save/load boundaries explicit. Persist data, not arbitrary live nodes.
-
-Autoloads fit save/profile state, scene transitions, or audio/session services
-only when cross-scene continuity is required. Static helper functions, shared
-resources, or regular nodes often solve reuse without global state.
-
-## Keep Processing And Input Explicit
-
-- Put collision-aware movement and physics mutations in `_physics_process`.
-- Put frame interpolation, presentation, and non-physics updates in `_process`.
-- Prefer event callbacks for discrete input; use polling when continuous state
-  is the actual requirement.
-- Use named Input Map actions for gameplay. Raw key codes belong in remapping or
-  tool code, not scattered through gameplay scripts.
-- Separate simulation state from UI presentation so UI changes do not become
-  gameplay dependencies.
-
-Check process modes, pause behavior, scene-tree order, deferred calls, and signal
-timing when lifecycle affects correctness. Do not infer callback order from file
-layout.
-
-## Generate Content Without Losing Authorship
-
-For large or repetitive scenes, keep an explicit source of truth:
-
-```text
-data or Resource -> generator/editor tool -> generated scene/resource
-```
-
-Use semantic identifiers and relationships rather than opaque coordinate dumps.
-Mark generated outputs and preserve a deterministic path back to their source.
-Put manual intent in the source data or generator before regenerating.
-
-Validate generated content by loading it through Godot, checking required nodes,
-owners, paths, groups, and resources, and collecting visual/runtime evidence when
-spatial meaning matters.
-
-## Official Reading Map
-
-- `tutorials/best_practices/scene_organization.rst`
-- `tutorials/best_practices/scenes_versus_scripts.rst`
-- `tutorials/best_practices/autoloads_versus_regular_nodes.rst`
-- `tutorials/best_practices/node_alternatives.rst`
-- `tutorials/best_practices/godot_interfaces.rst`
-- `tutorials/best_practices/project_organization.rst`
-- `tutorials/scripting/scene_tree.rst`
-- `tutorials/scripting/groups.rst`
-- `tutorials/scripting/resources.rst`
-- `tutorials/inputs/inputevent.rst`
+[Scene organization](https://docs.godotengine.org/en/4.7/tutorials/best_practices/scene_organization.html), [scenes versus scripts](https://docs.godotengine.org/en/4.7/tutorials/best_practices/scenes_versus_scripts.html), [autoloads versus regular nodes](https://docs.godotengine.org/en/4.7/tutorials/best_practices/autoloads_versus_regular_nodes.html), [node alternatives](https://docs.godotengine.org/en/4.7/tutorials/best_practices/node_alternatives.html), [project organization](https://docs.godotengine.org/en/4.7/tutorials/best_practices/project_organization.html), [SceneTree](https://docs.godotengine.org/en/4.7/tutorials/scripting/scene_tree.html), and [input events](https://docs.godotengine.org/en/4.7/tutorials/inputs/inputevent.html).
