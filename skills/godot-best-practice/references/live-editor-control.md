@@ -1,144 +1,54 @@
 # Live Editor Control
 
-Use a live-editor integration when it gives stronger evidence or safer
-editor-owned mutations than raw file editing. The capability contract is
-portable; Godot AI is the recommended first-class adapter, not a required
-dependency.
+Use a connected editor when it provides useful scene mutation, diagnostics, input, or visual evidence. Godot AI is an optional third-party adapter. The workflow also applies to other integrations with equivalent capabilities.
 
-## Contents
+## Routing
 
-- Capability contract
-- Routing by task
-- Session and authority preflight
-- Godot AI adapter
-- Evidence and fallback
-- Maintenance boundary
-
-## Capability contract
-
-A useful live-editor integration may provide some or all of these capabilities:
-
-- identify connected editor sessions and their project roots;
-- read editor readiness, Godot version, current scene, and play state;
-- inspect and mutate scene trees, node properties, signals, and resources;
-- run and stop the project, inspect the runtime tree, and send player input;
-- read editor and game diagnostics;
-- capture the editor viewport or running game.
-
-Route by available capability, not by an assumed MCP namespace. Tool prefixes,
-installation paths, and configuration syntax belong to each harness. If a
-different integration provides the same semantics, apply the same authority and
-evidence rules.
-
-## Routing by task
-
-| Task | Preferred route |
+| Task | Route |
 | --- | --- |
-| GDScript/C# or broad textual refactor | Edit files; use the integration to reload, run, and read diagnostics |
-| Small, fully understood `.tscn`/`.tres` edit | Direct edit or live editor, whichever preserves serialized ownership better |
-| Add/reparent/configure nodes or connect signals | Live editor with undo/save support |
-| Camera, lighting, materials, particles, animation, UI layout | Live editor plus captured visual evidence |
-| Gameplay behavior or interaction | Run, send bounded input, inspect runtime state/logs, and capture the exercised state |
-| Import, headless smoke, CI | Godot CLI |
-| Export | Godot CLI plus artifact inspection or launch |
+| Code or broad text refactor | File edits, followed by reload/build and diagnostics |
+| Small understood text-resource edit | File edit or editor operation |
+| Node structure, properties, connections | Editor operation with suitable save/undo behavior |
+| Camera, materials, lighting, animation, UI | Editor/runtime capture of the changed state |
+| Gameplay interaction | Run, bounded input, runtime state/logs, capture |
+| Import, CI, export | CLI and resulting artifact |
 
-Do not use a live-editor write merely because it exists. File edits remain
-better when the diff is the primary artifact, when many textual occurrences
-must change consistently, or when the operation must be reproducible in CI.
+Before writes or launch, match the canonical project root, Godot version, and readiness. Route explicitly if multiple sessions are plausible. Reuse this evidence until the session or project changes. Apply the same execution authority as the equivalent CLI/editor action, including runtime diagnostics already requested by the user.
 
-## Session and authority preflight
+Read-only review can inspect a connected editor. Running, reloading, autosaving, or changing the global active session are state changes. Prefer per-call routing and bounded operations; arbitrary code evaluation executes project code. Check the integration's actual capabilities rather than assuming every operation supports undo.
 
-Before the first stateful call:
+## Godot AI v4.3.0 adapter
 
-1. Enumerate sessions or query the intended session directly.
-2. Match the editor's canonical project root to the `project.godot` selected for
-   the task. A folder name alone is insufficient when several checkouts exist.
-3. Confirm the Godot version and editor readiness. Treat plugin/server version
-   incompatibility as unavailable capability, not as permission to replace it.
-4. Route every call explicitly when multiple sessions remain plausible.
-5. Inspect project trust surfaces before launch or reload just as for a direct
-   Godot invocation: addons, `@tool` scripts, autoloads, GDExtensions, and build
-   hooks can execute code.
+Verified **2026-10-23** against the latest release, [v4.3.0](https://github.com/hi-godot/godot-ai/releases/tag/v4.3.0), commit `b82b5c519b1b17228f70d8effce1626f391bd1dd`. The pinned [README](https://github.com/hi-godot/godot-ai/blob/b82b5c519b1b17228f70d8effce1626f391bd1dd/README.md) and [tool catalog](https://github.com/hi-godot/godot-ai/blob/b82b5c519b1b17228f70d8effce1626f391bd1dd/docs/TOOLS.md) own installation, schemas, and response details. This source check is not a live integration test.
 
-Review-only work may read an already-connected editor without saving, reloading,
-running, switching the global active session, or mutating state. A change/build
-request permits in-scope editor mutations and proportionate runtime checks; it
-does not authorize installing or reconfiguring the integration.
+V4 requires Godot 4.7+ within the 4.x line; v3/v4 plugins and servers are incompatible. Use the `godot-ai attach` stdio command supplied by the editor dock's **Configure** or manual fallback. A bare `http://127.0.0.1:8000/mcp` entry cannot authenticate. Missing setup is not permission to upgrade the project or reconfigure the user's tools.
 
-Prefer typed, bounded operations over arbitrary evaluation. Runtime code
-evaluation is project-code execution and should be used only with implementation
-authority, a trusted project, and no narrower operation that proves the claim.
+Tool names below are server names; host prefixes vary.
 
-## Godot AI adapter
+1. Use `session_manage(op="list")` or `godot://sessions` to identify the exact project. Rolled-up tools accept top-level `session_id`, beside `op` and `params`. For tools without per-call routing, use `session_activate` only after resolving the target and accounting for its state change.
+2. Read `editor_state`; require `readiness="ready"` before writes. Confirm the intended scene where relevant.
+3. Use scene/node/resource operations for editor-owned structure. Edit substantial code in files, then reload or import. Inspect returned `diagnostics` and new-error hints before dependent edits, including in headless sessions.
+4. Run with `project_run` when behavior must be exercised. It **autosaves in-memory MCP edits by default**; use `autosave=False` when those edits must remain unsaved, and account for whether the run can observe unsaved state.
+5. Inspect `game_status.status` using the table below. Exercise the changed state with `game_manage` runtime queries or bounded input.
+6. Read `logs_read(source="editor", include_details=true)` for parse/load/plugin/debugger errors and `source="game"` for the current run. Retain `run_id` across launches. A clean game log cannot rule out boot errors that occurred before the helper connected.
+7. Use `editor_screenshot` with the appropriate target: `viewport`, `viewport_2d`, `cinematic`, or `game`. Record scene, exercised state, viewport, and renderer. If Vision Routing returns `vision_description`/`routed_via`, report it as a routed description; it is not an image you inspected.
+8. Stop an unintended running or debugger-break session with `project_manage(op="stop")`. Keep a user-owned editor open.
 
-This mapping was checked on 2026-10-07 against [hi-godot/godot-ai
-`v4.3.0`](https://github.com/hi-godot/godot-ai/tree/v4.3.0) at commit
-`b82b5c519b1b17228f70d8effce1626f391bd1dd`, including its `docs/TOOLS.md`.
-Recheck the upstream tool catalog and compatibility behavior before changing the
-mapping or asserting it for a different version.
+| `game_status.status` | Meaning and next action |
+| --- | --- |
+| `live` | Game helper connected; proceed with supported runtime checks |
+| `launching` | Helper not ready yet; poll within a bounded startup window |
+| `not_live` | Helper-ready window expired; inspect launch/parse/load diagnostics |
+| `break` | Debugger stopped the game; stop, inspect the error, fix, then relaunch |
+| `no_helper` | Process launched without helper; use process evidence, not helper-dependent input/capture |
+| `stopped` | No active game session |
 
-Godot AI v4 requires Godot 4.7 or newer, and v3 and v4 plugins and servers do
-not interoperate. A client connects only through the `godot-ai attach` stdio
-command that the editor dock's **Configure** writes or its **Run this manually**
-fallback shows; a bare `http://127.0.0.1:8000/mcp` entry cannot authenticate.
-Treat an older Godot version, a mismatched plugin and server, or a bare HTTP
-client entry as unavailable capability, not as permission to upgrade or
-reconfigure the integration.
+### C# boundary
 
-Use unqualified server tool names here; Codex and Claude Code may expose them
-under different MCP prefixes.
-
-1. Call `session_manage(op="list")` (or read `godot://sessions`) and select the
-   exact project path. Use per-call `session_id` where available; otherwise pin
-   it with `session_activate` after the target is unambiguous.
-2. Call `editor_state` and require the expected project name/path context,
-   Godot version, current scene when relevant, and `readiness="ready"` before
-   writes.
-3. Use scene/node/resource domain operations for editor-owned structure. Use
-   file editing for substantial code changes, then ask the editor to reimport or
-   reload as needed.
-4. Use `project_run` for behavior claims. Interpret `game_status`, not only the
-   legacy play boolean. `live` proves the game helper connected; `launching`
-   needs a bounded poll; `break` requires stop, diagnostics, and a fix before a
-   meaningful retry; `no_helper` permits process-level evidence but blocks
-   helper-dependent input/capture claims.
-5. Use `game_manage` for runtime tree inspection and bounded keyboard, mouse,
-   gamepad, or action input. Exercise the changed state rather than only the
-   initial frame.
-6. Read `logs_read(source="editor", include_details=true)` for parse, load,
-   addon, and debugger errors. Read the current run's game log for runtime
-   behavior; retain `run_id` when comparing across launches.
-7. Use `editor_screenshot` for UI, 2D/3D composition, camera, materials,
-   lighting, animation, and running-game claims. Record the scene, state,
-   viewport, and renderer that the capture represents.
-8. Stop play when the workflow leaves the editor in an unintended running or
-   debugger-break state. Do not quit a user-owned editor merely to make a check
-   look clean.
-
-After any stateful call, inspect returned diagnostics and new-error hints before
-issuing dependent mutations. A successful MCP response proves only that
-operation; it does not replace export or platform evidence.
+Godot AI v4.3.0 reads and edits C# as text. `diagnostics_status="not_checked"` and an empty diagnostics array do not mean compilation passed. Rebuild with the .NET workflow and inspect its output; `logs_read` does not capture the .NET compiler's build output.
 
 ## Evidence and fallback
 
-Classify live-editor evidence with the same labels used elsewhere:
+An operation response proves that operation, not gameplay, image quality, or export success. Mark a result passed only when the intended state or artifact was observed; distinguish relevant errors, unavailable prerequisites, and calls that did not exercise the claim.
 
-- **Passed:** the intended editor/runtime state and artifact were observed.
-- **Failed:** the integration reached the target and returned a relevant error
-  or wrong result.
-- **Blocked:** the service, compatible editor session, helper, display/GPU, or
-  required authority was unavailable.
-- **Inconclusive:** the call succeeded but did not exercise or capture the claim.
-
-On connection failure, refresh status once when a transient startup is
-plausible. If the same prerequisite remains absent, use the strongest file/CLI
-fallback and stop retrying. Never infer that an unobserved scene, interaction,
-or visual result passed.
-
-## Maintenance boundary
-
-Keep the portable capability and authority rules stable. Update only this
-adapter when Godot AI renames tools, changes readiness/liveness semantics, or
-adds a stronger bounded operation. Do not copy the complete upstream tool
-manual into this skill; link behavior to the task and evidence decisions that
-agents otherwise get wrong.
+For a plausible startup race, refresh status once or use a bounded readiness poll. If the same prerequisite remains absent, continue through files/CLI and identify the specific live or visual evidence that remains unavailable. Do not repeatedly rediscover tools or retry a missing service.

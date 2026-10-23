@@ -1,139 +1,60 @@
 ---
 name: godot-best-practice
 description: >
-  Use when implementing, debugging, reviewing, or upgrading a Godot project, including project.godot, GDScript, Godot C#, .gd, .tscn, .tres, scenes, resources, signals, nodes, UI, physics, shaders, imports, exports, addons, or engine-version changes. Also trigger on Godot resource terms such as ExtResource, SubResource, NodePath, and res:// even when "Godot" is omitted. NOT for engine-neutral game design, unrelated C#/GLSL work, asset creation alone, or contributing to the Godot engine source itself.
+  Implement, debug, review, or upgrade Godot projects: GDScript, Godot C#, scenes, resources, signals, UI, physics, shaders, asset imports, Blender-to-Godot pipelines, and exports. Use for project.godot, .gd, .tscn, .tres, ExtResource, SubResource, NodePath, and res:// work even when Godot is not named. NOT for engine-neutral game design, unrelated C#/GLSL, standalone Blender asset creation, or Godot engine development.
 ---
 
 # Godot Best Practice
 
-Deliver a Godot-native result grounded in the project's actual engine version,
-serialized-resource semantics, and the strongest evidence the requested claim
-needs.
+Make the requested change against the project's actual Godot version. For a new project, use the verified current stable release unless the user chooses another target. Preserve scene ownership and asset sources, then verify the behavior or artifact the user needs.
 
-## Quick Path
+## Workflow
 
-1. Classify the request as answer/review/diagnosis or change/build.
-2. Locate `project.godot`; inspect the project version, language stack, renderer,
-   addons, export setup, nearby scenes/resources/scripts, and repository rules.
-3. Read only the references needed for the affected surface, select the
-   strongest available control surface, and verify version-sensitive behavior
-   against matching official documentation or engine source.
-4. Choose Godot-native ownership and data boundaries, then make the smallest
-   coherent change that preserves existing conventions.
-5. Validate at the layer that can actually prove the claim: parse, import,
-   build, scene load, runtime behavior, visual output, or export.
-6. Report the result, project/engine version evidence, files changed, checks
-   actually run, and any evidence that remains blocked.
+1. Locate the target `project.godot` or establish the new project root requested by the user. Inspect affected scripts, scenes, resources, imports, or export presets and repository conventions.
+2. Establish the engine version, language, renderer, and relevant addons or GDExtensions. Reuse reliable session evidence; recheck when the project, binary, or configuration changes.
+3. Read the reference for the affected surface. Use matching official docs for exact APIs and migration behavior; check engine source when documentation leaves a consequential ambiguity.
+4. Choose the source of truth and control surface. Edit code in files; use Godot for complex scene serialization and editor-owned changes when available.
+5. Make the coherent change and run the checks that establish its result. Code parsing, scene loading, gameplay, appearance, and exported builds require different evidence.
+6. Report the outcome, engine version, meaningful checks, and any remaining limitation. Stop when the requested result has sufficient evidence.
 
-## Authority And Runtime Safety
+## Scope and execution
 
-- Keep answer, review, and diagnosis requests read-only. Do not edit, import,
-  open the project in a different engine version, or run project code unless
-  the request authorizes that action.
-- Treat change and build requests as authority for in-scope local edits and
-  existing non-destructive checks. They do not authorize installing an engine,
-  addon, MCP server, export template, SDK, or test framework.
-- Treat changing the project's Godot version as a migration. Require that scope
-  explicitly; inspect version control state and the applicable migration guides
-  before opening or importing with the target editor.
-- Treat any Godot invocation as potential project-code execution. Inspect
-  `@tool` scripts, editor plugins, autoloads, and GDExtensions before running an
-  untrusted project. Use recovery mode only when it fits the diagnostic goal;
-  it changes what the editor loads and is not proof of a normal startup.
-- Do not regenerate or overwrite hand-authored scenes unless a documented source
-  file or generator owns them and the request includes regeneration.
+Follow the user's existing authorization. Answers and reviews do not imply edits. A request to reproduce or diagnose a runtime failure includes the relevant non-destructive execution; a change or build includes local edits and proportionate validation. Do not repeatedly ask for these actions or turn missing optional tooling into a blocker.
 
-## Establish The Project Contract
+An engine migration, dependency installation, integration setup, destructive cleanup, or publication needs that scope in the request. Opening or importing with a newer editor can rewrite project files, so do not silently upgrade an existing project to the current stable release.
 
-- Find the project root from `project.godot`, not from the current shell
-  directory alone. If several projects exist, select from task context or ask
-  before editing the wrong one.
-- Infer the project version from the version-like entry in
-  `application/config/features`, version pins and CI, repository documentation,
-  and a matching editor's `--version` output. `config_version=5` identifies the
-  Godot 4 configuration format; it does not identify a Godot 4 minor release.
-- Check `.csproj`/`.sln` and the `C#` feature before applying GDScript defaults to
-  a .NET project. Check `addons/`, `.gdextension`, `export_presets.cfg`, input
-  actions, renderer, and physics settings when they affect the task.
-- Preserve public node names, scene paths, resource paths, exported properties,
-  signals, groups, input actions, and serialization IDs unless the requested
-  change intentionally migrates every consumer.
-- Use `res://` for project resources and `user://` for persistent writable data.
-  Do not treat imported resources as ordinary runtime files.
+Godot invocations and editor reloads can execute project code. Before running an unfamiliar or untrusted project, inspect relevant `@tool` scripts, editor plugins, autoloads, GDExtensions, and build hooks. Recovery mode changes what loads and cannot establish normal startup.
 
-## Choose The Control Surface
+## Project and ownership rules
 
-- Keep files and the Godot CLI for code/bulk edits, CI, and export. Prefer a
-  connected live editor for scene/inspector mutations, runtime input, logs, and
-  screenshots; combine both paths when that proves more.
-- Godot AI is the recommended first-class integration. Before its first
-  stateful call, read `references/live-editor-control.md`, match the exact
-  project root/version, require readiness, and route multiple sessions exactly.
-- Apply the same authority and trust boundary as the equivalent editor action.
-  Never install/configure the integration implicitly; fall back to files/CLI
-  and mark unobserved live or visual evidence blocked.
+- Identify the version from `application/config/features`, repository pins, and the intended binary's `--version`. `config_version=5` identifies the Godot 4 settings format, not its minor release.
+- Detect `.csproj`/`.sln` and the `C#` feature before applying GDScript guidance. Check renderer, physics, input, and export settings when they affect the change.
+- Preserve public node names, resource paths, exported properties, signals, groups, input actions, and serialization IDs, or migrate their consumers together.
+- Use scenes for editable composition, scripts for behavior, and resources for reusable data. Resources are normally shared; choose private per-instance state deliberately.
+- Connect signals where both endpoints are owned. Use groups for many objects sharing a role and autoloads for cross-scene lifetime.
+- Use `res://` for project resources and `user://` for writable persistent data.
+- Change authored assets and import configuration. `.godot/` is generated cache; adjacent `.import` files and applicable `.uid` sidecars belong with their sources.
+- Change a generator or its inputs before regenerating its output. Keep hand-authored extensions outside imported or generated content that will be replaced.
 
-## Choose The Right Godot Surface
+## Tools and evidence
 
-- Put editable composition and ownership in scenes.
-- Put behavior, orchestration, and tools in scripts.
-- Put reusable configuration and asset-like data in resources. Remember that a
-  loaded resource is shared unless explicitly duplicated or localized.
-- Connect signals at the scene that owns both sides. Use groups for broad role
-  discovery, not as a hidden replacement for one required dependency.
-- Use autoloads only for genuinely broad lifetime or cross-scene state. Prefer a
-  regular scene-owned node or resource when its lifetime is local.
-- Prefer direct `.tscn`/`.tres` edits only when the change is small, surrounding
-  structure is understood, and IDs, paths, ownership, and ordering remain
-  coherent. Use Godot APIs or a generator for structural or repetitive changes.
-- Change source assets and committed import metadata, not `.godot/` cache or
-  derived imported artifacts.
+Use files and the Godot CLI for code, bulk edits, imports, CI, and export. A connected editor is useful for scene/inspector changes, interaction, diagnostics, and screenshots. [Live editor control](references/live-editor-control.md) describes the optional Godot AI adapter; match its project and readiness before writes. Use the available route without installing or configuring another integration implicitly.
 
-## Prove The Requested Claim
+Read [validation](references/validation.md) before choosing engine commands. Confirm unfamiliar flags with the selected binary's `--help`: Godot can ignore unknown flags. Engine `--test` runs engine C++ tests, not the project's tests.
 
-Match evidence to the claim: versioned API evidence plus parse/build for code;
-import and load for scenes/resources; a targeted test or smoke for behavior;
-runtime capture for UI, camera, animation, lighting, or layout; and a real
-artifact plus launch/inspection for export. An upgrade also needs the applicable
-migration guide and representative runtime, visual, and export evidence.
-
-Do not call the engine's `--test` flag a project test: it runs engine C++ tests
-only in builds compiled with test support. Use a GDScript or C# test framework
-only when the project already declares it or the user authorizes adding it.
-
-If a matching Godot binary or another prerequisite is unavailable, perform the
-useful static checks that remain and state exactly which engine evidence did not
-run. Never install a replacement or report a pass by inference.
+If a prerequisite is missing, finish useful work and available checks, then name the specific unverified claim. Static inspection cannot prove runtime behavior, a successful launch cannot prove visual correctness, and editor success cannot prove an export works.
 
 ## References
 
-| Read | When |
+| Task | Reference |
 | --- | --- |
-| `references/version-and-sources.md` | Determining the project/current version, resolving an exact API, or planning an upgrade |
-| `references/scenes-and-resources.md` | Editing or reviewing `.tscn`, `.tres`, UIDs, NodePaths, imports, or generated content |
-| `references/scripting.md` | Writing or reviewing GDScript, Godot C#, signals, lifecycle code, or node references |
-| `references/architecture.md` | Choosing scene, node, resource, signal, group, autoload, and ownership boundaries |
-| `references/domains-and-export.md` | Working in 2D, 3D, UI, physics, navigation, rendering, shaders, assets, or export |
-| `references/validation.md` | Selecting commands, runtime/visual evidence, failure handling, and completion criteria |
-| `references/live-editor-control.md` | Choosing live-editor capabilities and using the optional Godot AI adapter safely |
+| Version detection, exact APIs, upgrades | [Version and sources](references/version-and-sources.md) |
+| `.tscn`, `.tres`, UIDs, NodePaths, imports, resource sharing | [Scenes and resources](references/scenes-and-resources.md) |
+| GDScript, C#, lifecycle, dependencies, signals | [Scripting](references/scripting.md) |
+| Scene boundaries, ownership, data, global state | [Architecture](references/architecture.md) |
+| 2D/3D, UI, physics, navigation, rendering, export | [Domains and export](references/domains-and-export.md) |
+| Blender assets, glTF, reimport, materials, rigging, animation | [Blender pipeline](references/blender-pipeline.md) |
+| Parse/build, load, runtime, visual, export checks | [Validation](references/validation.md) |
+| Connected editor sessions and optional Godot AI tools | [Live editor control](references/live-editor-control.md) |
 
-The bundled `scripts/check_gdscript.sh` parses project GDScript files with a
-configured Godot binary. Resolve the active skill directory first and execute
-the script; do not assume the skill lives inside the target project.
-
-## Gotchas
-
-- `config_version=5` identifies the Godot 4 settings format, not the minor
-  release.
-- Godot can ignore an unknown CLI flag without failing; confirm flags with the
-  selected binary's `--help` and require the expected artifact or log.
-- `.godot/` is generated cache, while an asset's adjacent `.import` file is
-  source-controlled import metadata in normal Godot workflows.
-
-## Stop And Report
-
-Stop when the narrowest sufficient evidence passes. Retry only for a transient
-failure or corrected input.
-
-Lead with the outcome, then report the project/engine version, changed files,
-version-sensitive sources, checks run, and blocked or residual evidence.
+The bundled `scripts/check_gdscript.sh` checks GDScript with a configured Godot binary. Resolve it from this skill's installed directory, not the target project's working directory.

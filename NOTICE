@@ -1,22 +1,13 @@
 # NOTICE
 
-This repository contains original skill guidance informed by official Godot
-engine source, official Godot documentation, and comparative public research.
+This repository contains original skill guidance informed by official Godot engine source, official Godot documentation, Blender documentation, and comparative public research. No engine, documentation, or third-party skill files are vendored.
 
-No Godot engine or documentation files are vendored. The 2026-07-10 rewrite was
-checked against:
+The 2026-10-23 core guidance refresh used Godot `4.7.2-stable` and the matching `4.7` documentation. The optional editor adapter was checked against `hi-godot/godot-ai` `v4.3.0`. Exact revisions and the earlier 2026-07-10 authoring baseline are recorded in [source provenance](docs/source-provenance.md). Blender and glTF sources are linked in the [Blender pipeline](skills/godot-best-practice/references/blender-pipeline.md).
 
-- `godotengine/godot` tag `4.7-stable`
-- `godotengine/godot-docs` branch `4.7`
-- https://godotengine.org/releases/4.7/
-- https://docs.godotengine.org/en/4.7/
+Earlier design research consulted these public Godot agent-skill examples:
 
-Earlier design research also consulted public Godot agent-skill examples:
+- [Godot skill listing](https://mcp.directory/skills/godot)
+- [bfollington/terma](https://github.com/bfollington/terma)
+- [fernforestgames/agent-skill-godot](https://github.com/fernforestgames/agent-skill-godot)
 
-- https://mcp.directory/skills/godot
-- https://github.com/bfollington/terma
-- https://github.com/fernforestgames/agent-skill-godot
-
-Their skill files are not copied or vendored here. The bundled
-`scripts/check_gdscript.sh` is an original implementation whose validation route
-was verified against Godot 4.7 documentation and `main/main.cpp`.
+Their skill files are not copied here. `scripts/check_gdscript.sh` is an original implementation whose validation route was checked against Godot documentation and `main/main.cpp`.
